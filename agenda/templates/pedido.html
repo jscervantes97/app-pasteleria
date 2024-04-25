@@ -1,0 +1,41 @@
+{% extends 'base_app.html' %}
+{% block content %}
+<div style="text-align: center;"><h1>{{tituloForm}}</h1></div>
+<form action="{% url 'create_pedido' %}" method="POST">
+  {% csrf_token %}
+    <div class="mb-3">
+      <label for="fechaEntrega" class="form-label">Fecha de Entrega</label>
+      <input type="datetime-local" class="form-control" id="fechaEntrega" name="fechaEntrega">
+    </div>
+    <div class="mb-3">
+      <label for="descripcion" class="form-label">Descripción</label>
+      <input type="text" class="form-control" id="descripcion" name="descripcion" >
+    </div>
+    <div class="mb-3">
+      <label for="tamano" class="form-label">Tamaño</label>
+      <input type="text" class="form-control" id="tamano" name="tamano">
+    </div>
+    <div class="mb-3">
+      <label for="costo" class="form-label">Costo</label>
+      <input type="text" class="form-control" id="costo" name="costo">
+    </div>
+    <div class="mb-3">
+      <label for="anticipo" class="form-label">Anticipo</label>
+      <input type="text" class="form-control" id="anticipo" name="anticipo">
+    </div>
+    <div class="mb-3">
+      <label for="nombreCliente" class="form-label">Nombre del Cliente</label>
+      <input list="clientes" type="text" class="form-control" id="nombreCliente" name="nombreCliente" autocomplete="off">
+      <datalist id="clientes">
+        {% for cliente in clientes %}
+          <option value="{{ cliente.nombre_cliente }}">{{ cliente.nombre_cliente }}</option>
+        {% endfor %}
+      </datalist>
+    </div>
+    <div class="mb-3">
+      <label for="celular" class="form-label">Celular</label>
+      <input type="text" class="form-control" id="celular" name="celular">
+    </div>
+    <button type="submit" class="btn btn-primary">Agregar</button>
+</form>
+{% endblock %}

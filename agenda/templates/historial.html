@@ -1,0 +1,41 @@
+{% extends 'base_app.html' %}
+{% block content %}
+<div class="text-center"><h2>Historial Pedidos</h2></div>
+<div data-mdb-input-init class="form-outline mb-4">
+    <input type="text" id="inpSrc" class="form-control form-control-lg" />
+    <label class="form-label" for="inpSrc">Nombre Cliente</label>
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col"># Pedido</th>
+        <th scope="col">Fecha Hora Entrega</th>
+        <th scope="col">Cliente</th>
+        <th scope="col">Estatus</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for pedido in pedidos %}
+        <tr>
+            <th scope="row">{{pedido.id}}</th>
+            <td>{{ pedido.fecha_entrega }}</td>
+            <td>{{ pedido.cliente.nombre_cliente }}</td>
+            <td> {% if pedido.estatus == 1 %} {{"En espera"}}{% elif pedido.estatus == 2 %} {{"Entregado"}} {% endif %} </td>
+            <td>
+                <a href="pedido/{{pedido.id}}" class="btn btn-primary btn-sm">Editar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script>
+document.getElementById("inpSrc").focus();
+const txtSrc = document.getElementById("inpSrc");
+const pedidos = '{{clientes}}' ;
+console.log(pedidos)
+document.getElementById("inpSrc").addEventListener("keypress", (e)=>{
+    console.log("me estas oprimiento", txtSrc.value)
+});
+</script>
+{% endblock %}
