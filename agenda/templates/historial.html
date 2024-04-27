@@ -32,10 +32,21 @@
 <script>
 document.getElementById("inpSrc").focus();
 const txtSrc = document.getElementById("inpSrc");
-const pedidos = '{{clientes}}' ;
+const pedidos = [];
 console.log(pedidos)
-document.getElementById("inpSrc").addEventListener("keypress", (e)=>{
-    console.log("me estas oprimiento", txtSrc.value)
+document.getElementById("inpSrc").addEventListener("keypress", async (e)=>{
+    
+    const response = await fetch('http://localhost:8000/api/pedidos/?nombre_cliente='+txtSrc.value, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+    const json = await response.json();
+    console.log(json)
+});
+window.addEventListener('load', function(event) {
+    alert('llamaste la vista de historial')
 });
 </script>
 {% endblock %}

@@ -9,4 +9,5 @@ urlpatterns = [
     path('pedido/', renderpedido),
     path('pedido/<int:idPedido>', renderpedido),
     path('pedido/nuevo', saveupdatepedido, name="create_pedido")
+
 ]

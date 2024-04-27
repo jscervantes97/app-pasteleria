@@ -4,7 +4,7 @@ from .models import Cliente, Pedido
 # Create your views here.
 def goindex(request):
     #pedidos = Pedido.objects.all().order_by('fecha_entrega').values()
-    pedidos = Pedido.objects.all().order_by('fecha_entrega')
+    pedidos = Pedido.objects.filter(estatus=1).order_by('fecha_entrega')
     
     return render(request, 'index.html', { "pedidos" : pedidos })
 
