@@ -1,1 +1,1 @@
-web: gunicorn pasteleriaapp.wsgi
+web: python manage.py collecstatic && gunicorn pasteleriaapp.wsgi
