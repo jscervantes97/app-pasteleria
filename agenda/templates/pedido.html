@@ -1,0 +1,103 @@
+{% extends 'base_app.html' %}
+{% load static %}
+{% block content %}
+<div style="text-align: center;"><h1>{{tituloForm}}</h1></div>
+
+<form id="formulario" action="{% url 'create_pedido' %}" method="POST">
+  {% csrf_token %}
+    <div class="mb-3">
+      <label for="fechaEntrega" class="form-label">Fecha de Entrega</label>
+      <input type="datetime-local" class="form-control" id="fecha_entrega" name="fechaEntrega">
+    </div>
+    <div class="mb-3">
+      <label for="descripcion" class="form-label">Descripción</label>
+      <input type="text" class="form-control" id="descripcion" name="descripcion">
+    </div>
+    <div class="mb-3">
+      <label for="tamano" class="form-label">Tamaño</label>
+      <input type="text" class="form-control" id="tamano" name="tamano">
+    </div>
+    <div class="mb-3">
+      <label for="costo" class="form-label">Costo</label>
+      <input type="text" class="form-control" id="costo" name="costo">
+    </div>
+    <div class="mb-3">
+      <label for="anticipo" class="form-label">Anticipo</label>
+      <input type="text" class="form-control" id="anticipo" name="anticipo">
+    </div>
+    <div class="mb-3">
+      <label for="nombreCliente" class="form-label">Nombre del Cliente</label>
+      <input list="clientes" type="text" class="form-control" id="nombre_cliente" name="nombreCliente" autocomplete="off">
+      <datalist id="clientes">
+        {% for cliente in clientes %}
+          <option value="{{ cliente.nombre_cliente }}">{{ cliente.nombre_cliente }}</option>
+        {% endfor %}
+      </datalist>
+    </div>
+    <div class="mb-3">
+      <label for="celular" class="form-label">Celular</label>
+      <input type="text" class="form-control" id="celular" name="celular">
+    </div>
+    <button type="submit" class="btn btn-primary">Agregar</button>
+</form>
+<script type="text/javascript">
+let idPedido = "{{idPedido}}";
+let pedido = {} ;
+window.onload = async (e) =>{
+  
+  if(idPedido != "None"){
+    pedido = await restService.get(`api/pedidos/${idPedido}`);
+    console.log(pedido)
+    const fecha = new Date(pedido.fecha_entrega);
+    const fechaFormateada = `${fecha.getFullYear()}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getDate().toString().padStart(2, '0')}T${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
+    document.getElementById("fecha_entrega").value = fechaFormateada
+    formMapper.mapToForm(['descripcion','tamano','costo','anticipo'] , pedido);
+    formMapper.mapToForm(['nombre_cliente','celular'] , pedido.cliente);
+  }
+  
+  const formulario = document.getElementById('formulario');
+
+  formulario.addEventListener('submit', async function(event) {
+    // Evitamos que se envíe el formulario automáticamente
+    event.preventDefault();
+    console.log("Previniendo")
+   
+    const datosJson = formMapper.mapFormToJson(formulario);
+
+    // Imprimir los datos en formato JSON
+    console.log(datosJson);
+    datosJson['idPedido'] = idPedido ; 
+    let params = {
+      url : `api/pedidos/crearactualizar`,
+      body : datosJson
+    }
+    let result ; 
+    if(idPedido == "None")
+    {
+      result = await restService.post(params);
+    }else{
+      result = await restService.patch(params);
+    }
+    console.log(result);
+    Swal.fire({
+      title: "<strong>Pedido Registrado Con Exito</strong>",
+      icon: "success",
+      html: ``,
+      showCloseButton: true,
+      showCancelButton: false,
+      focusConfirm: false,
+      confirmButtonText: `
+        <a class="btn btn-primary" href="/agenda/">Aceptar</a>
+      `,
+      confirmButtonAriaLabel: "Thumbs up, great!",
+      cancelButtonText: `
+        <i class="fa fa-thumbs-down"></i>
+      `,
+      cancelButtonAriaLabel: "Thumbs down"
+    });
+     
+  });
+
+}
+</script>
+{% endblock %}
