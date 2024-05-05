@@ -109,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-mx'
 
 TIME_ZONE = 'UTC'
 
@@ -127,3 +127,19 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# En settings.py
+
+import locale
+from django.utils import formats
+
+# Configura el idioma español
+locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+
+# Define el formato de fecha y hora
+DATE_FORMAT = 'd de %B de %Y'
+TIME_FORMAT = 'H:%M'
+
+# Configura los formatos de fecha y hora en la aplicación
+formats.DATETIME_FORMAT = "DATETIME_FORMAT"
+formats.DATE_FORMAT = "DATE_FORMAT"
+formats.TIME_FORMAT = "TIME_FORMAT"

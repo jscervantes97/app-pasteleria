@@ -14,6 +14,7 @@ class Pedido(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(null=True, auto_now_add=True, blank=True)
     fecha_entrega = models.DateTimeField(null=True, blank=True)
+    fecha_entregado = models.DateTimeField(null=True, blank=True)
     descripcion = models.CharField(max_length=300, null=True, blank=True)
     tamano = models.CharField(max_length=300, null=True, blank=True)
     costo = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)

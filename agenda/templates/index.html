@@ -1,7 +1,7 @@
 {% extends 'base_app.html' %}
 {% block content %}
 <div class="text-center"><h2>Pedidos Pendientes</h2></div>
-<table class="table">
+<table id="myTable" class="table">
     <thead>
       <tr>
         <th scope="col"># Pedido</th>
@@ -17,14 +17,90 @@
             <td>{{ pedido.fecha_entrega }}</td>
             <td>{{ pedido.cliente.nombre_cliente }}</td>
             <td>
-                <a href="pedido/{{pedido.id}}" class="btn btn-primary btn-sm">Editar</a>
-                <button class="btn btn-danger btn-sm">Cancelar </button> 
+                <a href="pedido/{{pedido.id}}" class="btn btn-primary btn-sm">Visualizar</a>
+                <button onclick="preguntarEntregar('{{pedido.id}}')" class="btn btn-success btn-sm">Entregar</button>
+                <button onclick="preguntarCancelar('{{pedido.id}}')" class="btn btn-danger btn-sm">Cancelar</button>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<script>
 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script>
+  
+  async function preguntarEntregar(id){
+    //alert(id)
+    let respuestaDialog = await Swal.fire({
+            title: 'Confirma la entrega del pedido',
+            showDenyButton: true,
+            showCancelButton: false,
+            confirmButtonText: 'Si',
+            denyButtonText: `No`,
+          }) ; 
+    if(respuestaDialog.isConfirmed){
+      let datosJson ={
+        "idPedido" : parseInt(id),
+        "estado": 2
+      }
+      let params = {
+        url : `api/pedidos/actualizarestado`,
+        body : datosJson
+      }
+      let result = await restService.patch(params);
+      console.log(result)
+      let respuestaDialog2 = await Swal.fire({
+            title: 'Pedido Confirmado Con Exito',
+            showDenyButton: false,
+            showCancelButton: false,
+            confirmButtonText: 'Aceptar',
+            denyButtonText: `No`,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+          }) ;
+      if(respuestaDialog2.isConfirmed){
+        window.location.reload()
+      }
+      
+    }
+  }
+
+  async function preguntarCancelar(id){
+    let respuestaDialog = await Swal.fire({
+            title: 'Confirma la cancelacion del pedido',
+            showDenyButton: true,
+            showCancelButton: false,
+            confirmButtonText: 'Si',
+            denyButtonText: `No`,
+          }) ; 
+    if(respuestaDialog.isConfirmed){
+      let datosJson ={
+        "idPedido" : parseInt(id),
+        "estado": 0
+      }
+      let params = {
+        url : `api/pedidos/actualizarestado`,
+        body : datosJson
+      }
+      let result = await restService.patch(params);
+      console.log(result)
+      let respuestaDialog2 = await Swal.fire({
+            title: 'Pedido Cancelado',
+            showDenyButton: false,
+            showCancelButton: false,
+            confirmButtonText: 'Aceptar',
+            denyButtonText: `No`,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+          }) ;
+      if(respuestaDialog2.isConfirmed){
+        window.location.reload()
+      }
+      
+    }
+  }
 </script>
 {% endblock %}

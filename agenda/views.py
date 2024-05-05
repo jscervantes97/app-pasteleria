@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Cliente, Pedido
+import locale
+
 
 # Create your views here.
 def goindex(request):
@@ -8,12 +10,16 @@ def goindex(request):
     
     return render(request, 'index.html', { "pedidos" : pedidos })
 
+def renderexample(request):
+    return render(request, 'htmlexample.html')
+
 def renderlogin(request):
     return render(request, 'login.html')
 
 def renderhistorial(request):
     clientes = Cliente.objects.all()
     pedidos = Pedido.objects.all()
+    
     return render(request, 'historial.html', {
         "clientes" : clientes,
         "pedidos" : pedidos
@@ -33,22 +39,26 @@ def renderpedido(request, idPedido=None):
         "idPedido" : idPedido, 
         "tituloForm" : tituloForm, 
         "descripcion" : "dato example",
+        "pedido": pedido,
         "clientes" : listaClientes })
 
 def saveupdatepedido(request, idPedido=None):
     if idPedido is None:
-       cveCliente = request.POST['nombreCliente']
-       print(cveCliente.strip().upper())
-       if Cliente.objects.filter(nombre_cliente=cveCliente).exists(): 
-           cliente = Cliente.objects.get(nombre_cliente=cveCliente)
-       else:
-            cliente = Cliente(nombre_cliente = request.POST['nombreCliente'], clave = cveCliente.strip().upper(), celular = request.POST['celular'])
+        cveCliente = request.POST['nombreCliente']
+        print(cveCliente.strip().upper())
+        if Cliente.objects.filter(nombre_cliente=cveCliente).exists(): 
+            cliente = Cliente.objects.get(nombre_cliente=cveCliente)
+            if cliente.celular != request.POST['celular']:
+                cliente.celular = cliente.celular + ',' + request.POST['celular']
+            cliente.save()
+        else:
+            cliente = Cliente(nombre_cliente=request.POST['nombreCliente'], clave=cveCliente.strip().upper(), celular=request.POST['celular'])
             cliente.save()
 
-       pedido = Pedido(cliente=cliente, fecha_entrega=request.POST['fechaEntrega'],
-                       descripcion=request.POST['descripcion'], tamano=request.POST['tamano'],
-                       costo=request.POST['costo'], anticipo=request.POST['anticipo'], restante = (int(request.POST['costo']) - int(request.POST['anticipo'])))
-       pedido.save()
+        pedido = Pedido(cliente=cliente, fecha_entrega=request.POST['fechaEntrega'],
+                        descripcion=request.POST['descripcion'], tamano=request.POST['tamano'],
+                        costo=request.POST['costo'], anticipo=request.POST['anticipo'], restante=(int(request.POST['costo']) - int(request.POST['anticipo'])))
+        pedido.save()
 
+    return redirect('/agenda/')
 
-    return render(request , 'index.html')
