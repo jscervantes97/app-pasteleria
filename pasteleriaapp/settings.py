@@ -130,17 +130,17 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # En settings.py
 
-import locale
-from django.utils import formats
+#import locale
+#from django.utils import formats
 
 # Configura el idioma español
-locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+#locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Define el formato de fecha y hora
-DATE_FORMAT = 'd de %B de %Y'
-TIME_FORMAT = 'H:%M'
+#DATE_FORMAT = 'd de %B de %Y'
+#TIME_FORMAT = 'H:%M'
 
 # Configura los formatos de fecha y hora en la aplicación
-formats.DATETIME_FORMAT = "DATETIME_FORMAT"
-formats.DATE_FORMAT = "DATE_FORMAT"
-formats.TIME_FORMAT = "TIME_FORMAT"
+#formats.DATETIME_FORMAT = "DATETIME_FORMAT"
+#formats.DATE_FORMAT = "DATE_FORMAT"
+#formats.TIME_FORMAT = "TIME_FORMAT"
