@@ -52,7 +52,7 @@ window.onload = async (e) =>{
   if(idPedido != "None"){
     let params = {
       url : `api/pedidos/${idPedido}`,
-      body : datosJson,
+      body : {},
       headers
     }
     pedido = await restService.get(params);
