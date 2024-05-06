@@ -1,13 +1,13 @@
 //const urlServer = 'http://localhost:8000' ; //Desarrollo
 const urlServer = 'https://app-pasteleria-production.up.railway.app' ;
+
 const restService = {
 
-    get : async(url) => { 
-        const response = await fetch(`${urlServer}/${url}`, {
+    get : async(params) => { 
+        //console.log(' {{csrf_token}} ')
+        const response = await fetch(`${urlServer}/${params.url}`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: params.headers
         });
         return await response.json();
     },
@@ -15,9 +15,7 @@ const restService = {
     post : async(params) => { 
         const response = await fetch(`${urlServer}/${params.url}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: params.headers,
             body: JSON.stringify(params.body)
         });
         return await response.json();
@@ -28,9 +26,7 @@ const restService = {
         console.log(params)
         const response = await fetch(`${urlServer}/${params.url}`, {
             method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: params.headers,
             body: JSON.stringify(params.body)
         });
         return await response.json();

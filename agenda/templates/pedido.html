@@ -44,9 +44,18 @@
 let idPedido = "{{idPedido}}";
 let pedido = {} ;
 window.onload = async (e) =>{
-  
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  const headers = {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+  }
   if(idPedido != "None"){
-    pedido = await restService.get(`api/pedidos/${idPedido}`);
+    let params = {
+      url : `api/pedidos/${idPedido}`,
+      body : datosJson,
+      headers
+    }
+    pedido = await restService.get(params);
     console.log(pedido)
     const fecha = new Date(pedido.fecha_entrega);
     const fechaFormateada = `${fecha.getFullYear()}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getDate().toString().padStart(2, '0')}T${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
