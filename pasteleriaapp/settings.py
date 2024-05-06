@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
+from dotenv import load_dotenv
 import os 
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,14 +83,7 @@ WSGI_APPLICATION = 'pasteleriaapp.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pasteleriadb',
-        'USER' : 'postgres',
-        'PASSWORD' : 'Iterator',
-        'HOST' : 'localhost' ,
-        'PORT' : '5432'
-    }
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
 
 
@@ -144,6 +141,8 @@ ALLOWED_HOSTS = [
     'localhost',
     'app-pasteleria-production.up.railway.app'
 ]
+
+CSRF_TRUSTED_ORIGINS = ['https://app-pasteleria-production.up.railway.app']
 # En settings.py
 
 #import locale
