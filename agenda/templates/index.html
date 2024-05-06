@@ -43,7 +43,7 @@
     headers['X-CSRFToken'] = tkn ;
   }
   async function preguntarEntregar(id){
-    console.log(cookie)
+    console.log(headers)
     //alert(id)
     let respuestaDialog = await Swal.fire({
             title: 'Confirma la entrega del pedido',
