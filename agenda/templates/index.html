@@ -37,10 +37,10 @@
   }
   window.onload = async (e) =>{
     let cookie = document.cookie
-    let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
-    console.log(csrfToken)
-    console.log(cookie)
-    headers['X-CSRFToken'] = csrftoken
+    let tkn = cookie.substring(cookie.indexOf('=') + 1);
+    console.log("tkn es = ",tkn);
+    console.log(cookie) ;
+    headers['X-CSRFToken'] = tkn ;
   }
   async function preguntarEntregar(id){
     console.log(cookie)
