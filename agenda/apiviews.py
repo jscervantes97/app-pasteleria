@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+from django.views.decorators.csrf import csrf_exempt
 from .models import Pedido, Cliente
 from .serializers import PedidoSerializer
 from .filters import PedidoFilter
@@ -51,7 +52,8 @@ class PedidoDetalle(generics.RetrieveAPIView):
     queryset = Pedido.objects.all()
     serializer_class = PedidoSerializer
     lookup_field = 'id' 
-    
+
+@csrf_exempt
 @api_view(['POST', 'PATCH'])
 def crearactualizarpedido(request):
     cveCliente = request.data.get('nombreCliente')
