@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-8tccdvx@$)7mjjb0mvxg2=ja$@-kfr_lqg4i#tvlpb+j223)eg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -85,6 +85,7 @@ WSGI_APPLICATION = 'pasteleriaapp.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
+
 
 
 # Password validation

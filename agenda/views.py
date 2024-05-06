@@ -2,6 +2,11 @@ from django.shortcuts import render, redirect
 from .models import Cliente, Pedido
 import locale
 
+from dotenv import load_dotenv
+import os 
+
+load_dotenv()
+
 
 # Create your views here.
 def goindex(request):
@@ -11,7 +16,9 @@ def goindex(request):
     return render(request, 'index.html', { "pedidos" : pedidos })
 
 def renderexample(request):
-    return render(request, 'htmlexample.html')
+    urlDB =  os.getenv('DATABASE_URL')
+    print(urlDB)
+    return render(request, 'htmlexample.html', {"variable" : urlDB})
 
 def renderlogin(request):
     return render(request, 'login.html')
