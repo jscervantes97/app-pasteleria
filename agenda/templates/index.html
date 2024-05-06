@@ -31,8 +31,17 @@
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <script>
-  
+  let cookie = document.cookie
+  let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
+  const headers = {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+  }
+  window.onload = async (e) =>{
+    
+  }
   async function preguntarEntregar(id){
+    console.log(cookie)
     //alert(id)
     let respuestaDialog = await Swal.fire({
             title: 'Confirma la entrega del pedido',
@@ -48,7 +57,8 @@
       }
       let params = {
         url : `api/pedidos/actualizarestado`,
-        body : datosJson
+        body : datosJson,
+        headers
       }
       let result = await restService.patch(params);
       console.log(result)
@@ -83,7 +93,8 @@
       }
       let params = {
         url : `api/pedidos/actualizarestado`,
-        body : datosJson
+        body : datosJson,
+        headers
       }
       let result = await restService.patch(params);
       console.log(result)
