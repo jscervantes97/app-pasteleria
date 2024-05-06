@@ -1,6 +1,7 @@
 {% extends 'base_app.html' %}
 {% block content %}
 <div class="text-center"><h2>Pedidos Pendientes</h2></div>
+{% csrf_token %}
 <table id="myTable" class="table">
     <thead>
       <tr>
@@ -36,11 +37,9 @@
         'Content-Type': 'application/json'
   }
   window.onload = async (e) =>{
-    let cookie = document.cookie
-    let tkn = cookie.substring(cookie.indexOf('=') + 1);
-    console.log("tkn es = ",tkn);
-    console.log(cookie) ;
-    headers['X-CSRFToken'] = tkn ;
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    console.log(csrftoken) ;
+    headers['X-CSRFToken'] = csrftoken ;
   }
   async function preguntarEntregar(id){
     console.log(headers)
