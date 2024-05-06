@@ -53,7 +53,7 @@ class PedidoDetalle(generics.RetrieveAPIView):
     serializer_class = PedidoSerializer
     lookup_field = 'id' 
 
-@csrf_exempt
+
 @api_view(['POST', 'PATCH'])
 def crearactualizarpedido(request):
     cveCliente = request.data.get('nombreCliente')
