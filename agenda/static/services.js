@@ -1,8 +1,9 @@
-
+//const urlServer = 'http://localhost:8000' ; //Desarrollo
+const urlServer = 'https://app-pasteleria-production.up.railway.app' ;
 const restService = {
 
     get : async(url) => { 
-        const response = await fetch(`http://localhost:8000/${url}`, {
+        const response = await fetch(`${urlServer}/${url}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -12,7 +13,7 @@ const restService = {
     },
 
     post : async(params) => { 
-        const response = await fetch(`http://localhost:8000/${params.url}`, {
+        const response = await fetch(`${urlServer}/${params.url}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -25,7 +26,7 @@ const restService = {
     patch : async(params) => { 
         console.log("params");
         console.log(params)
-        const response = await fetch(`http://localhost:8000/${params.url}`, {
+        const response = await fetch(`${urlServer}/${params.url}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
