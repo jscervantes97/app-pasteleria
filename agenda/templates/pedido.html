@@ -78,7 +78,8 @@ window.onload = async (e) =>{
     datosJson['idPedido'] = idPedido ; 
     let params = {
       url : `api/pedidos/crearactualizar`,
-      body : datosJson
+      body : datosJson,
+      headers
     }
     let result ; 
     if(idPedido == "None")
