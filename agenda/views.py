@@ -16,7 +16,7 @@ def goindex(request):
     return render(request, 'index.html', { "pedidos" : pedidos })
 
 def renderexample(request):
-    urlDB =  os.getenv('DATABASE_URL')
+    urlDB =  os.getenv('DATABASE_PRIVATE_URL')
     print(urlDB)
     return render(request, 'htmlexample.html', {"variable" : urlDB})
 
