@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Cliente, Pedido
+from .forms import CrearActualizarPedidoForm
 
 
 
@@ -11,7 +12,8 @@ def goindex(request):
     return render(request, 'index.html', { "pedidos" : pedidos })
 
 def renderexample(request):
-    return render(request, 'htmlexample.html')
+    form = CrearActualizarPedidoForm()
+    return render(request, 'htmlexample.html', {'form': form})
 
 def renderlogin(request):
     return render(request, 'login.html')
@@ -34,7 +36,9 @@ def renderpedido(request, idPedido=None):
     else:
         pedido = Pedido.objects.get(pk=idPedido)
 
-    #print(pedido)   
+    
+    #objeto = vars(pedido)
+    #print(objeto) 
     return render(request, 'pedido.html', { 
         "idPedido" : idPedido, 
         "tituloForm" : tituloForm, 

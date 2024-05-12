@@ -3,7 +3,7 @@
 {% block content %}
 <div style="text-align: center;"><h1>{{tituloForm}}</h1></div>
 
-<form id="formulario" action="{% url 'create_pedido' %}" method="POST">
+<form id="formulario" action="{% url 'create_pedido' %}" method="POST" enctype="multipart/form-data">
   {% csrf_token %}
     <div class="mb-3">
       <label for="fechaEntrega" class="form-label">Fecha de Entrega</label>
@@ -38,9 +38,28 @@
       <label for="celular" class="form-label">Celular</label>
       <input type="text" class="form-control" id="celular" name="celular">
     </div>
+    <div class="mb-3">
+      <label for="imagen" class="form-label">Foto pedido</label>
+      <input type="file" class="form-control" id="imagen" name="imagen" onchange="readURL(this);" accept="image/jpeg,image/png,image/gif">
+      <img id="imgShow" src="#" alt="Imagen Pedido" style="display: none;" />
+    </div>
+    
     <button type="submit" class="btn btn-primary">Agregar</button>
 </form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
+  function readURL(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        document.getElementById("imgShow").style = "display : block";
+        $('#imgShow').attr('src', e.target.result).width(250).height(300);
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
 let idPedido = "{{idPedido}}";
 let pedido = {} ;
 window.onload = async (e) =>{
@@ -74,6 +93,7 @@ window.onload = async (e) =>{
     const datosJson = formMapper.mapFormToJson(formulario);
 
     // Imprimir los datos en formato JSON
+    
     console.log(datosJson);
     datosJson['idPedido'] = idPedido ; 
     let params = {
@@ -87,6 +107,46 @@ window.onload = async (e) =>{
       result = await restService.post(params);
     }else{
       result = await restService.patch(params);
+      const imagen = document.getElementById('imagen').files[0];
+
+        // Creamos un nuevo FormData para enviar la imagen
+      let formDataImagen = new FormData();
+      formDataImagen.append('imagen', imagen);
+      formDataImagen.append('idPedido', idPedido);
+
+      
+      const options = {
+        method: 'POST',
+        headers: {
+          //'Content-Type': 'multipart/form-data;',
+          'X-CSRFToken': csrftoken,
+          //'User-Agent': 'insomnia/9.1.0'
+        }
+      };
+
+      options.body = formDataImagen;
+      console.log("sigue formData")
+      for (const value of options.body.values()) {
+        console.log(value);
+      }
+      fetch('http://localhost:8000/api/pedidos/imagen', options)
+        .then(response => response.json())
+        .then(response => {
+          console.log("Pase del then")
+          console.log(response)})
+        .catch(err => {
+          console.log("Trono esta chingadera")
+          console.error(err)
+        });
+      /*let result2 = await restService.formPatch({
+        url : 'api/pedidos/imagen',
+        body : formDataImagen,
+        headers : {
+          
+          'X-CSRFToken': csrftoken
+        }
+      })
+      console.log(result2)*/
     }
     console.log(result);
     Swal.fire({
@@ -107,7 +167,6 @@ window.onload = async (e) =>{
     });
      
   });
-
 }
 </script>
 {% endblock %}

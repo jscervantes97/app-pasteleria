@@ -57,6 +57,7 @@ class PedidoDetalle(generics.RetrieveAPIView):
 @api_view(['POST', 'PATCH'])
 def crearactualizarpedido(request):
     cveCliente = request.data.get('nombreCliente')
+    
     if Cliente.objects.filter(nombre_cliente=cveCliente).exists(): 
         cliente = Cliente.objects.get(nombre_cliente=cveCliente)
         if request.data.get('celular') not in cliente.celular :
@@ -71,7 +72,7 @@ def crearactualizarpedido(request):
                         descripcion=request.data.get('descripcion'), tamano=request.data.get('tamano'),
                         costo=Decimal(request.data.get('costo')), anticipo=Decimal(request.data.get('anticipo')), restante = (Decimal(request.data.get('costo')) - Decimal(request.data.get('anticipo'))))
         pedido.save()
-        return Response({"message": "Exito al crar el nuevo pedido"}, status=status.HTTP_200_OK)
+        return Response({"message": "Exito al crar el nuevo pedido", "pedido" : pedido}, status=status.HTTP_200_OK)
     elif request.method == 'PATCH':
         idPedido = request.data.get('idPedido')
         pedido = get_object_or_404(Pedido , pk = idPedido)
@@ -86,3 +87,22 @@ def crearactualizarpedido(request):
         return Response({"message": "Exito al actualizar los datos de pedido"}, status=status.HTTP_200_OK)
     else:
         return Response({"message": "No Supported method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['POST', 'PATCH'])
+def crearactualizarimagenpedido(request):
+    # Obtener los datos de la solicitud
+    pedido_id = request.POST.get('idPedido')
+    imagen = request.FILES.get('imagen')
+    
+    print(pedido_id)
+    print(imagen)
+    # Verificar si el pedido existe
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+
+    # Actualizar o crear la imagen asociada al pedido
+    if imagen:
+        pedido.imagen = imagen
+        pedido.save()
+        return Response({'detail': 'Imagen actualizada correctamente'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'detail': 'No se proporcionó una imagen'}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,5 +1,5 @@
-//const urlServer = 'http://localhost:8000' ; //Desarrollo
-const urlServer = 'https://app-pasteleria-production.up.railway.app' ;
+const urlServer = 'http://localhost:8000' ; //Desarrollo
+//const urlServer = 'https://app-pasteleria-production.up.railway.app' ; //produccion
 
 const restService = {
 
@@ -21,6 +21,15 @@ const restService = {
         return await response.json();
     },
 
+    formPost : async(params) => { 
+        const response = await fetch(`${urlServer}/${params.url}`, {
+            method: 'POST',
+            headers: params.headers,
+            body: params.body
+        });
+        return await response.json();
+    },
+
     patch : async(params) => { 
         console.log("params");
         console.log(params)
@@ -28,6 +37,20 @@ const restService = {
             method: 'PATCH',
             headers: params.headers,
             body: JSON.stringify(params.body)
+        });
+        return await response.json();
+    },
+
+    formPatch : async(params) => { 
+        console.log("params");
+        console.log(params)
+        for (const value of params.body.values()) {
+            console.log(value);
+          }
+        const response = await fetch(`${urlServer}/${params.url}`, {
+            method: 'POST',
+            headers: params.headers,
+            data: params.body
         });
         return await response.json();
     },

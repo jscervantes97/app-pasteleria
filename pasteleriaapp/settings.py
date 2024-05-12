@@ -43,9 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'whitenoise.runserver_nostatic',
+    'bootstrap_datepicker_plus',
     'rest_framework',
     'agenda'
 ]
+
+DATEPICKER_INCLUDE_JQUERY = True
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -82,9 +86,25 @@ WSGI_APPLICATION = 'pasteleriaapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+#DATABASES = {
+#    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+#}
+
 DATABASES = {
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'pasteleriadb',
+        'USER' : 'postgres',
+        'PASSWORD' : 'Iterator',
+        'HOST' : 'localhost' ,
+        'PORT' : '5432'
+    }
 }
+
+
+MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 
 
 
