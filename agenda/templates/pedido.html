@@ -129,7 +129,7 @@ window.onload = async (e) =>{
       for (const value of options.body.values()) {
         console.log(value);
       }
-      fetch('http://localhost:8000/api/pedidos/imagen', options)
+      fetch('https://app-pasteleria-production.up.railway.app/api/pedidos/imagen', options)
         .then(response => response.json())
         .then(response => {
           console.log("Pase del then")

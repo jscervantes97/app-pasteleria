@@ -1,5 +1,5 @@
-const urlServer = 'http://localhost:8000' ; //Desarrollo
-//const urlServer = 'https://app-pasteleria-production.up.railway.app' ; //produccion
+8//const urlServer = 'http://localhost:8000' ; //Desarrollo
+const urlServer = 'https://app-pasteleria-production.up.railway.app' ; //produccion
 
 const restService = {
 
