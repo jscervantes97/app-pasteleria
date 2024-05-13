@@ -89,16 +89,17 @@ WSGI_APPLICATION = 'pasteleriaapp.wsgi.application'
 #DATABASES = {
 #    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 #}
+#'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'pasteleriadb',
+#        'USER' : 'postgres',
+#        'PASSWORD' : 'Iterator',
+#        'HOST' : 'localhost' ,
+#        'PORT' : '5432'
+#    }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pasteleriadb',
-        'USER' : 'postgres',
-        'PASSWORD' : 'Iterator',
-        'HOST' : 'localhost' ,
-        'PORT' : '5432'
-    }
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
 
 
