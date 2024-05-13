@@ -72,7 +72,7 @@ def crearactualizarpedido(request):
                         descripcion=request.data.get('descripcion'), tamano=request.data.get('tamano'),
                         costo=Decimal(request.data.get('costo')), anticipo=Decimal(request.data.get('anticipo')), restante = (Decimal(request.data.get('costo')) - Decimal(request.data.get('anticipo'))))
         pedido.save()
-        return Response({"message": "Exito al crar el nuevo pedido", "pedido" : pedido}, status=status.HTTP_200_OK)
+        return Response({"message": "Exito al crar el nuevo pedido", "idPedido" : pedido.id}, status=status.HTTP_200_OK)
     elif request.method == 'PATCH':
         idPedido = request.data.get('idPedido')
         pedido = get_object_or_404(Pedido , pk = idPedido)
@@ -105,4 +105,6 @@ def crearactualizarimagenpedido(request):
         pedido.save()
         return Response({'detail': 'Imagen actualizada correctamente'}, status=status.HTTP_200_OK)
     else:
-        return Response({'detail': 'No se proporcionó una imagen'}, status=status.HTTP_400_BAD_REQUEST)
+        pedido.imagen = "images/SIN-IMAGEN.jpg"
+        pedido.save()
+        return Response({'detail': 'Se guardo el registro sin imagen'}, status=status.HTTP_200_OK)

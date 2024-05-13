@@ -44,7 +44,7 @@
       <img id="imgShow" src="#" alt="Imagen Pedido" style="display: none;" />
     </div>
     
-    <button type="submit" class="btn btn-primary">Agregar</button>
+    <button type="submit" class="btn btn-primary">Guardar</button>
 </form>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
@@ -81,6 +81,9 @@ window.onload = async (e) =>{
     document.getElementById("fecha_entrega").value = fechaFormateada
     formMapper.mapToForm(['descripcion','tamano','costo','anticipo'] , pedido);
     formMapper.mapToForm(['nombre_cliente','celular'] , pedido.cliente);
+    document.getElementById("imgShow").style = "display : block";
+    $('#imgShow').attr('src', e.target.result).width(250).height(300);
+    document.getElementById("imgShow").src = pedido.imagen ;
   }
   
   const formulario = document.getElementById('formulario');
@@ -102,55 +105,47 @@ window.onload = async (e) =>{
       headers
     }
     let result ; 
+    const imagen = document.getElementById('imagen').files[0];
+      console.log("wo a ver que tiene imagen")
     if(idPedido == "None")
     {
       result = await restService.post(params);
+      console.log(result);
+      idPedido = result.idPedido
     }else{
       result = await restService.patch(params);
-      const imagen = document.getElementById('imagen').files[0];
-
+      //console.log(imagen)
         // Creamos un nuevo FormData para enviar la imagen
-      let formDataImagen = new FormData();
-      formDataImagen.append('imagen', imagen);
-      formDataImagen.append('idPedido', idPedido);
-
-      
-      const options = {
-        method: 'POST',
-        headers: {
-          //'Content-Type': 'multipart/form-data;',
-          'X-CSRFToken': csrftoken,
-          //'User-Agent': 'insomnia/9.1.0'
-        }
-      };
-
-      options.body = formDataImagen;
-      console.log("sigue formData")
-      for (const value of options.body.values()) {
-        console.log(value);
-      }
-      fetch('https://app-pasteleria-production.up.railway.app/api/pedidos/imagen', options)
-        .then(response => response.json())
-        .then(response => {
-          console.log("Pase del then")
-          console.log(response)})
-        .catch(err => {
-          console.log("Trono esta chingadera")
-          console.error(err)
-        });
-      /*let result2 = await restService.formPatch({
-        url : 'api/pedidos/imagen',
-        body : formDataImagen,
-        headers : {
-          
-          'X-CSRFToken': csrftoken
-        }
-      })
-      console.log(result2)*/
     }
+    let formDataImagen = new FormData();
+    if(imagen != undefined){
+      formDataImagen.append('imagen', imagen);
+    }
+    formDataImagen.append('idPedido', idPedido);
+    const options = {
+      method: 'POST',
+      headers: {
+        //'Content-Type': 'multipart/form-data;',
+        'X-CSRFToken': csrftoken,
+        //'User-Agent': 'insomnia/9.1.0'
+      }
+    };
+    options.body = formDataImagen;
+    //produccion https://app-pasteleria-production.up.railway.app/api/pedidos/imagen 
+    //desarrollo http://localhost:8000
+    fetch('https://app-pasteleria-production.up.railway.app/api/pedidos/imagen', options)
+      .then(response => response.json())
+      .then(response => {
+        console.log("Pase del then")
+        console.log(response)})
+      .catch(err => {
+        console.log("Trono esta chingadera")
+        console.error(err)
+      });
+    
     console.log(result);
     Swal.fire({
-      title: "<strong>Pedido Registrado Con Exito</strong>",
+      title: "<strong>Pedido Guardado Con Exito</strong>",
       icon: "success",
       html: ``,
       showCloseButton: true,

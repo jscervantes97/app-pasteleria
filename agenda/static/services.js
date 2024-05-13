@@ -1,4 +1,4 @@
-8//const urlServer = 'http://localhost:8000' ; //Desarrollo
+//const urlServer = 'http://localhost:8000' ; //Desarrollo
 const urlServer = 'https://app-pasteleria-production.up.railway.app' ; //produccion
 
 const restService = {
