@@ -21,7 +21,7 @@ class Pedido(models.Model):
     anticipo = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     restante = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     estatus = models.IntegerField(default=1) 
-    imagen = models.ImageField(upload_to='images/' , null=True)
+    imagen = models.BinaryField(null=True, blank=True)
 
     def __str__(self):
         return f"Cliente: {self.cliente} - Fecha de Creación: {self.fecha_creacion} - Fecha de Entrega: {self.fecha_entrega} - Descripción: {self.descripcion} - Tamaño: {self.tamano} - Costo: {self.costo} - Anticipo: {self.anticipo} - Restante: {self.restante} - Estatus: {self.estatus}"

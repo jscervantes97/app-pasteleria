@@ -42,6 +42,7 @@
       <label for="imagen" class="form-label">Foto pedido</label>
       <input type="file" class="form-control" id="imagen" name="imagen" onchange="readURL(this);" accept="image/jpeg,image/png,image/gif">
       <img id="imgShow" src="#" alt="Imagen Pedido" style="display: none;" />
+      <div id="noImage">Sin Imagen Registrada</div>
     </div>
     
     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -81,9 +82,23 @@ window.onload = async (e) =>{
     document.getElementById("fecha_entrega").value = fechaFormateada
     formMapper.mapToForm(['descripcion','tamano','costo','anticipo'] , pedido);
     formMapper.mapToForm(['nombre_cliente','celular'] , pedido.cliente);
-    document.getElementById("imgShow").style = "display : block";
-    $('#imgShow').attr('src', e.target.result).width(250).height(300);
-    document.getElementById("imgShow").src = pedido.imagen ;
+    
+    if(pedido.imagen != null){
+      const byteCharacters = atob(pedido.imagen);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/jpeg' });
+      const blobUrl = URL.createObjectURL(blob);
+      document.getElementById("imgShow").style = "display : block";
+      $('#imgShow').attr('src', e.target.result).width(450).height(400);
+      document.getElementById("imgShow").src = blobUrl ;
+      document.getElementById("noImage").style = "display : none";
+
+    }
+    
   }
   
   const formulario = document.getElementById('formulario');

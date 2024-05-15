@@ -101,10 +101,10 @@ def crearactualizarimagenpedido(request):
 
     # Actualizar o crear la imagen asociada al pedido
     if imagen:
-        pedido.imagen = imagen
+        pedido.imagen = imagen.read()
         pedido.save()
         return Response({'detail': 'Imagen actualizada correctamente'}, status=status.HTTP_200_OK)
     else:
-        pedido.imagen = "images/SIN-IMAGEN.jpg"
-        pedido.save()
+        #pedido.imagen = None
+        #pedido.save()
         return Response({'detail': 'Se guardo el registro sin imagen'}, status=status.HTTP_200_OK)
