@@ -146,9 +146,9 @@ window.onload = async (e) =>{
       }
     };
     options.body = formDataImagen;
-    //produccion https://app-pasteleria-production.up.railway.app/api/pedidos/imagen 
-    //desarrollo http://localhost:8000
-    fetch('https://app-pasteleria-production.up.railway.app/api/pedidos/imagen', options)
+    //const urlServer = 'http://localhost:8000/api/pedidos/imagen' ; //Desarrollo
+    const urlServer = 'https://app-pasteleria-production.up.railway.app/api/pedidos/imagen' ; //produccion
+    fetch(urlServer, options)
       .then(response => response.json())
       .then(response => {
         console.log("Pase del then")
