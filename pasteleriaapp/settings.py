@@ -75,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'agenda.context_processors.message_processor'
             ],
         },
     },
@@ -86,11 +87,11 @@ WSGI_APPLICATION = 'pasteleriaapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
-}
-
 """DATABASES = {
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+}"""
+
+DATABASES = {
    'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'pasteleriadb',
@@ -99,7 +100,7 @@ DATABASES = {
         'HOST' : 'localhost' ,
         'PORT' : '5432'
     }
-}"""
+}
 
 
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')

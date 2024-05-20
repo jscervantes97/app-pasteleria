@@ -87,14 +87,14 @@ rel="stylesheet"
             aria-expanded="false"
           >
             <i class="fas fa-bell"></i>
-            <span class="badge rounded-pill badge-notification bg-danger">10</span>
+            <span class="badge rounded-pill badge-notification bg-danger">{{ pedidosHoy }}</span>
           </a>
           <ul
             class="dropdown-menu dropdown-menu-end"
             aria-labelledby="navbarDropdownMenuLink"
           >
             <li>
-              <a class="dropdown-item" href="#">Hay 10 pedidos para el dia de hoy</a>
+              <a class="dropdown-item" href="#">Hay {{ pedidosHoy }} pedidos para el dia de hoy</a>
             </li>
           </ul>
         </div>
