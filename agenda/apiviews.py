@@ -70,7 +70,7 @@ def crearactualizarpedido(request):
     if request.method == 'POST':
         pedido = Pedido(cliente=cliente, fecha_entrega=request.data.get('fechaEntrega'),
                         descripcion=request.data.get('descripcion'), tamano=request.data.get('tamano'),
-                        costo=Decimal(request.data.get('costo')), anticipo=Decimal(request.data.get('anticipo')), restante = (Decimal(request.data.get('costo')) - Decimal(request.data.get('anticipo'))))
+                        costo=request.data.get('costo'), anticipo=request.data.get('anticipo'), restante = 0.0 )
         pedido.save()
         return Response({"message": "Exito al crar el nuevo pedido", "idPedido" : pedido.id}, status=status.HTTP_200_OK)
     elif request.method == 'PATCH':
@@ -79,9 +79,9 @@ def crearactualizarpedido(request):
         pedido.fecha_entrega = request.data.get('fechaEntrega')
         pedido.descripcion = request.data.get('descripcion')
         pedido.tamano = request.data.get('tamano')
-        pedido.costo = Decimal(request.data.get('costo'))
-        pedido.anticipo = Decimal(request.data.get('anticipo'))
-        pedido.restante = (Decimal(request.data.get('costo')) - Decimal(request.data.get('anticipo')))
+        pedido.costo = request.data.get('costo')
+        pedido.anticipo = request.data.get('anticipo')
+        pedido.restante = 0.0
         pedido.cliente = cliente
         pedido.save()
         return Response({"message": "Exito al actualizar los datos de pedido"}, status=status.HTTP_200_OK)
