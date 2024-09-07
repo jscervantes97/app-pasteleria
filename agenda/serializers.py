@@ -11,5 +11,5 @@ class PedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
         cliente = ClientesSerializer(many=True, read_only=False)
-        fields = ('id', 'cliente', 'fecha_creacion', 'fecha_entrega', 'descripcion', 'tamano', 'costo', 'anticipo', 'restante', 'estatus', 'imagen',)
+        fields = ('id', 'cliente', 'fecha_creacion', 'fecha_entrega', 'descripcion', 'tamano', 'costo', 'anticipo', 'restante', 'estatus', 'imagen','celular','imagenUrl',)
         depth = 1

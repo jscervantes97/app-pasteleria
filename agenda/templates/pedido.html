@@ -56,6 +56,7 @@
       reader.onload = function (e) {
         document.getElementById("imgShow").style = "display : block";
         $('#imgShow').attr('src', e.target.result).width(250).height(300);
+        document.getElementById("noImage").style = "display : none";
       };
 
       reader.readAsDataURL(input.files[0]);
@@ -80,10 +81,12 @@ window.onload = async (e) =>{
     const fecha = new Date(pedido.fecha_entrega);
     const fechaFormateada = `${fecha.getFullYear()}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getDate().toString().padStart(2, '0')}T${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
     document.getElementById("fecha_entrega").value = fechaFormateada
-    formMapper.mapToForm(['descripcion','tamano','costo','anticipo'] , pedido);
-    formMapper.mapToForm(['nombre_cliente','celular'] , pedido.cliente);
+    formMapper.mapToForm(['descripcion','tamano','costo','anticipo','celular'] , pedido);
+    formMapper.mapToForm(['nombre_cliente'] , pedido.cliente);
     
-    if(pedido.imagen != null){
+
+    if(pedido.imagenUrl != null){
+      /*
       const byteCharacters = atob(pedido.imagen);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
@@ -96,7 +99,11 @@ window.onload = async (e) =>{
       $('#imgShow').attr('src', e.target.result).width(450).height(400);
       document.getElementById("imgShow").src = blobUrl ;
       document.getElementById("noImage").style = "display : none";
-
+      */
+      document.getElementById("imgShow").style = "display : block";
+      $('#imgShow').attr('src', e.target.result).width(250).height(300);
+      document.getElementById("imgShow").src = pedido.imagenUrl ;
+      document.getElementById("noImage").style = "display : none";
     }
     
   }

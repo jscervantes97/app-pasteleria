@@ -61,7 +61,7 @@ def crearactualizarpedido(request):
     if Cliente.objects.filter(nombre_cliente=cveCliente).exists(): 
         cliente = Cliente.objects.get(nombre_cliente=cveCliente)
         if request.data.get('celular') not in cliente.celular :
-            cliente.celular = cliente.celular + ',' + request.data.get('celular')
+            print('ya existe')
         cliente.save()
     else:
         cliente = Cliente(nombre_cliente = request.data.get('nombreCliente'), clave = cveCliente.strip().upper(), celular = request.data.get('celular'))
@@ -70,7 +70,7 @@ def crearactualizarpedido(request):
     if request.method == 'POST':
         pedido = Pedido(cliente=cliente, fecha_entrega=request.data.get('fechaEntrega'),
                         descripcion=request.data.get('descripcion'), tamano=request.data.get('tamano'),
-                        costo=request.data.get('costo'), anticipo=request.data.get('anticipo'), restante = 0.0 )
+                        costo=request.data.get('costo'), anticipo=request.data.get('anticipo'), restante = 0.0, celular = request.data.get('celular'))
         pedido.save()
         return Response({"message": "Exito al crar el nuevo pedido", "idPedido" : pedido.id}, status=status.HTTP_200_OK)
     elif request.method == 'PATCH':
@@ -83,6 +83,7 @@ def crearactualizarpedido(request):
         pedido.anticipo = request.data.get('anticipo')
         pedido.restante = 0.0
         pedido.cliente = cliente
+        pedido.celular = request.data.get('celular')
         pedido.save()
         return Response({"message": "Exito al actualizar los datos de pedido"}, status=status.HTTP_200_OK)
     else:
@@ -101,7 +102,8 @@ def crearactualizarimagenpedido(request):
 
     # Actualizar o crear la imagen asociada al pedido
     if imagen:
-        pedido.imagen = imagen.read()
+        pedido.imagen = None #imagen.read()
+        pedido.imagenUrl = imagen
         pedido.save()
         return Response({'detail': 'Imagen actualizada correctamente'}, status=status.HTTP_200_OK)
     else:
