@@ -1,1 +1,1 @@
-web: python manage.py collectstatic && gunicorn pasteleriaapp.wsgi
+web: python manage.py collectstatic --noinput && gunicorn pasteleriaapp.wsgi
