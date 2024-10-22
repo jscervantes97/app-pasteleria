@@ -84,7 +84,7 @@ def crearactualizarpedido(request):
         pedido.restante = 0.0
         pedido.cliente = cliente
         pedido.celular = request.data.get('celular')
-        pedido.save()
+        pedido.save()  
         return Response({"message": "Exito al actualizar los datos de pedido"}, status=status.HTTP_200_OK)
     else:
         return Response({"message": "No Supported method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

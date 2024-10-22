@@ -169,12 +169,12 @@ window.onload = async (e) =>{
     Swal.fire({
       title: "<strong>Pedido Guardado Con Exito</strong>",
       icon: "success",
-      html: ``,
+      html: `En caso de que no se guarde la imagen, favor de subirlo de nuevo, en caso de que no se guarde, favor de enviarle este folio al Administrador: ${idPedido}` ,
       showCloseButton: true,
       showCancelButton: false,
       focusConfirm: false,
       confirmButtonText: `
-        <a class="btn btn-primary" href="/agenda/">Aceptar</a>
+        <a class="btn btn-primary" href="/agenda/pedido/${idPedido}">Aceptar</a>
       `,
       confirmButtonAriaLabel: "Thumbs up, great!",
       cancelButtonText: `

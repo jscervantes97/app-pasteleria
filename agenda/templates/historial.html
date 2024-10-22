@@ -10,6 +10,7 @@
         <th scope="col">Cliente</th>
         <th scope="col">Estatus</th>
         <th>Acciones</th>
+        <th>descripcion</th>
       </tr>
     </thead>
     <tbody>
@@ -22,6 +23,7 @@
             <td>
                 <a href="pedido/{{pedido.id}}" class="btn btn-primary btn-sm">Visualizar</a>
             </td>
+            <td>{{ pedido.descripcion }}</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -37,8 +39,14 @@ $(document).ready(function() {
     searching: true,
     ordering: true,
     language: {
-        url: '//cdn.datatables.net/plug-ins/2.0.5/i18n/es-ES.json',
-    },
+        url: 'static/es-ES.json',
+    },columnDefs: [
+      {
+        targets: 5, // Índice de la columna "Descripción" (0 basado)
+        visible: false, // Oculta la columna
+        searchable: true // Permite que su contenido se busque
+      },
+    ]
     
     // Más opciones aquí
   });

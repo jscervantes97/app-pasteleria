@@ -8,6 +8,7 @@
         <th scope="col" style="color: #6d2a78;">Fecha Hora Entrega</th>
         <th scope="col" style="color: #6d2a78;">Cliente</th>
         <th></th>
+        <th>descripcion</th>
       </tr>
     </thead>
     <tbody>
@@ -19,6 +20,9 @@
                 <a href="pedido/{{pedido.id}}" class="btn btnFusia letraBlanca btn-sm">Visualizar</a>
                 <button onclick="preguntarEntregar('{{pedido.id}}')" class="btn btnMorado letraBlanca btn-sm">Entregar</button>
                 <button onclick="preguntarCancelar('{{pedido.id}}')" class="btn btnRosa letraBlanca btn-sm">Cancelar</button>
+            </td>
+            <td>
+              {{ pedido.descripcion }}
             </td>
         </tr>
         {% endfor %}
@@ -110,5 +114,24 @@
       
     }
   }
+  $(document).ready(function() {
+  $('#myTable').DataTable({
+    paging: true,
+    searching: true,
+    ordering: true,
+    language: {
+        url: '//cdn.datatables.net/plug-ins/2.0.5/i18n/es-ES.json',
+    },
+    columnDefs: [
+      {
+        targets: 3, // Índice de la columna "Descripción" (0 basado)
+        visible: false, // Oculta la columna
+        searchable: true // Permite que su contenido se busque
+      },
+    ]
+    // Más opciones aquí
+  });
+});
+
 </script>
 {% endblock %}
