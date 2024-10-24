@@ -119,6 +119,7 @@
     paging: true,
     searching: true,
     ordering: true,
+    order: [[0, 'asc']],
     language: {
         url: '//cdn.datatables.net/plug-ins/2.0.5/i18n/es-ES.json',
     },
@@ -128,9 +129,44 @@
         visible: false, // Oculta la columna
         searchable: true // Permite que su contenido se busque
       },
+      {
+        targets: 0,  // Cambia este número por el índice de la columna de fecha
+        render: function (data, type, row) {
+            if (type === 'sort') {
+                // Extraer la fecha y convertirla a un formato que JavaScript pueda entender
+                var parts = data.split(' a las ');
+                var dateParts = parts[0].split(' de ');
+                var day = parseInt(dateParts[0], 10);
+                var month = getMonthFromName(dateParts[1]);
+                var year = parseInt(dateParts[2], 10);
+                var time = parts[1];
+                var fullDate = new Date(year, month, day, time.split(':')[0], time.split(':')[1]);
+                return fullDate.getTime();  // Devolver el timestamp para la ordenación
+            }
+            return data;  // Devolver el valor sin modificar para mostrarlo en la tabla
+        }
+      }
     ]
     // Más opciones aquí
   });
+
+  function getMonthFromName(monthName) {
+        var months = {
+            'Enero': 0,
+            'Febrero': 1,
+            'Marzo': 2,
+            'Abril': 3,
+            'Mayo': 4,
+            'Junio': 5,
+            'Julio': 6,
+            'Agosto': 7,
+            'Septiembre': 8,
+            'Octubre': 9,
+            'Noviembre': 10,
+            'Diciembre': 11
+        };
+        return months[monthName];
+    }
 });
 
 </script>
