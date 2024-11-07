@@ -87,7 +87,8 @@ window.onload = async (e) =>{
 
     //console.log("Fecha convertida ? " , localDate.toISOString().slice(0, 16));
 
-    document.getElementById("fecha_entrega").value = fechaFormateada
+    //document.getElementById("fecha_entrega").value = fechaFormateada
+    document.getElementById("fecha_entrega").value = dateFromBackend
     formMapper.mapToForm(['descripcion','tamano','costo','anticipo','celular'] , pedido);
     formMapper.mapToForm(['nombre_cliente'] , pedido.cliente);
     
