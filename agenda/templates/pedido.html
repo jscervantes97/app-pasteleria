@@ -81,7 +81,7 @@ window.onload = async (e) =>{
     const fecha = new Date(pedido.fecha_entrega);
     const fechaFormateada = `${fecha.getFullYear()}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getDate().toString().padStart(2, '0')}T${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
     // Fecha en UTC desde el backend
-    const dateFromBackend = pedido.fecha_entrega.split("T");
+    const dateFromBackend = pedido.fecha_entrega.replace("Z", "").split("T").join(" ");
     console.log(dateFromBackend)
 
 
