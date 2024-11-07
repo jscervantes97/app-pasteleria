@@ -135,14 +135,11 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'es-mx'
 
 
-#TIME_ZONE = 'UTC'
-TIME_ZONE = 'America/Mexico_City'
+TIME_ZONE = 'UTC'
+
 USE_I18N = True
 
 USE_TZ = True
-
-
-#USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

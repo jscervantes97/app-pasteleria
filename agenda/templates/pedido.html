@@ -81,14 +81,11 @@ window.onload = async (e) =>{
     const fecha = new Date(pedido.fecha_entrega);
     const fechaFormateada = `${fecha.getFullYear()}-${(fecha.getMonth() + 1).toString().padStart(2, '0')}-${fecha.getDate().toString().padStart(2, '0')}T${fecha.getHours().toString().padStart(2, '0')}:${fecha.getMinutes().toString().padStart(2, '0')}`;
     // Fecha en UTC desde el backend
-    const dateFromBackend = new Date(pedido.fecha_entrega);
+    const dateFromBackend = pedido.fecha_entrega.split("T");
+    console.log(dateFromBackend)
 
-    // Ajuste de la fecha a la zona horaria local
-    const localDate = new Date(dateFromBackend.getTime() - dateFromBackend.getTimezoneOffset() * 60000);
 
-    // Asignar al input `datetime-local`
-    //document.querySelector('#myDateTimeInput').value = localDate.toISOString().slice(0, 16);
-    console.log("Fecha convertida ? " , localDate.toISOString().slice(0, 16));
+    //console.log("Fecha convertida ? " , localDate.toISOString().slice(0, 16));
 
     document.getElementById("fecha_entrega").value = fechaFormateada
     formMapper.mapToForm(['descripcion','tamano','costo','anticipo','celular'] , pedido);
