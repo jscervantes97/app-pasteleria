@@ -110,8 +110,7 @@ window.onload = async (e) =>{
       */
       document.getElementById("imgShow").style = "display : block";
       $('#imgShow').attr('src', e.target.result).width(250).height(300);
-      console.log(pedido.imagenUrl);
-      console.log(pedido.imagenUrl.replace("http",  "https"))
+      
       document.getElementById("imgShow").src = pedido.imagenUrl.replace("http",  "https") ;
       document.getElementById("noImage").style = "display : none";
     }

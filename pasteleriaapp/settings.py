@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'whitenoise.runserver_nostatic',
     'bootstrap_datepicker_plus',
+    'corsheaders',
     'rest_framework',
     'agenda'
 ]
@@ -54,6 +55,7 @@ DATEPICKER_INCLUDE_JQUERY = True
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'corsheaders.middleware.CorsMiddleware'
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -166,6 +168,11 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = ['https://app-pasteleria-production.up.railway.app']
+
+CORS_ALLOWED_ORIGINS = [
+    "https://app-pasteleria-production.up.railway.app",
+    "https://tu-dominio-adicional.com",
+]
 # En settings.py
 
 #import locale
