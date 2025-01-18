@@ -11,6 +11,8 @@ from .models import Pedido, Cliente
 from .serializers import PedidoSerializer
 from .filters import PedidoFilter
 from decimal import Decimal
+from django.http import HttpResponse
+
 
 import requests
 from dotenv import load_dotenv
@@ -142,8 +144,9 @@ def crearactualizarimagenpedido(request):
 
     # Actualizar o crear la imagen asociada al pedido
     if imagen:
+        url_server = os.getenv('URL_FILES_SERVER')
         # Subir la imagen a otra URL mediante POST
-        url_destino = "http://45.58.56.30:8080/sieslite-files-api/upload"  # Cambia esto por la URL de tu API
+        url_destino = f"{url_server}/sieslite-files-api/upload"  # Cambia esto por la URL de tu API
         headers = {
             "Authorization": f"Token {token}",  # Autenticación con token
         }
@@ -163,7 +166,7 @@ def crearactualizarimagenpedido(request):
                 pedido.imagen = None
                 pedido.imagenUrl = imagen  # Guardar la URL devuelta por la API
                 #pedido.imagenUrlExternal = image_url
-                pedido.imagenUrlExternal = f"http://45.58.56.30:8080/{image_url}"
+                pedido.imagenUrlExternal = f"{url_server}/{image_url}"
                 pedido.save()
 
                 return Response(
@@ -209,7 +212,8 @@ def crearactualizarimagenpedidoMazivo(request):
     # Actualizar o crear la imagen asociada al pedido
     if imagen:
         # Subir la imagen a otra URL mediante POST
-        url_destino = "http://45.58.56.30:8080/sieslite-files-api/upload"  # Cambia esto por la URL de tu API
+        url_server = os.getenv('URL_FILES_SERVER')
+        url_destino = f"{url_server}/sieslite-files-api/upload"  # Cambia esto por la URL de tu API
         headers = {
             "Authorization": f"Token {token}",  # Autenticación con token
         }
@@ -245,6 +249,5 @@ def crearactualizarimagenpedidoMazivo(request):
             )
     else:
         # Guardar el pedido sin imagen
-        pedido.imagen = None
-        pedido.save()
         return Response({'detail': 'Se guardó el registro sin imagen'}, status=status.HTTP_200_OK)
+    

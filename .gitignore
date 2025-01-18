@@ -1,7 +1,8 @@
 venv
-__pycache
+__pycache__
 db.sqlite3
 .idea
 staticfiles
 .env
 media
+agenda/__pycache__/
