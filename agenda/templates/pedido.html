@@ -111,7 +111,11 @@ window.onload = async (e) =>{
       document.getElementById("imgShow").style = "display : block";
       $('#imgShow').attr('src', e.target.result).width(250).height(300);
       
-      document.getElementById("imgShow").src = pedido.imagenUrl.replace("http",  "https") ;
+      // deshabilitar en produccion
+      //document.getElementById("imgShow").src = pedido.imagenUrl.replace("http",  "https") ;
+      let urlImagenPedido = pedido.imagenUrlExternal ;
+      console.log("Url Imagen " + urlImagenPedido);
+      document.getElementById("imgShow").src = urlImagenPedido ;
       document.getElementById("noImage").style = "display : none";
     }
     

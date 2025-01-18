@@ -65,3 +65,5 @@ def saveupdatepedido(request, idPedido=None):
 
     return redirect('/agenda/')
 
+def renderSubidorImagenes(request):
+    return render(request, 'subidorimagenes.html')

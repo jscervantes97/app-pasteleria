@@ -24,6 +24,7 @@ class Pedido(models.Model):
     imagen = models.BinaryField(null=True, blank=True)
     imagenUrl = models.ImageField(upload_to='images/' , null=True)
     celular = models.CharField(max_length=100,blank=True)
+    imagenUrlExternal = models.TextField(default="")
 
     def __str__(self):
         return f"Cliente: {self.cliente} - Fecha de Creación: {self.fecha_creacion} - Fecha de Entrega: {self.fecha_entrega} - Descripción: {self.descripcion} - Tamaño: {self.tamano} - Costo: {self.costo} - Anticipo: {self.anticipo} - Restante: {self.restante} - Estatus: {self.estatus}"

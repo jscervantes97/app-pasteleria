@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carga masiva fotos pedidos Archivos</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="mb-4">Subidor de imagenes</h1>
+        <div class="mb-3">
+            <label for="fileInput" class="form-label">Selecciona tus archivos</label>
+            <input type="file" class="form-control" id="fileInput" multiple>
+        </div>
+        <div id="output" class="mt-4">
+            <!-- Los resultados aparecerán aquí -->
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script personalizado -->
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const files = event.target.files; // Obtén los archivos seleccionados
+            const output = document.getElementById('output');
+            output.innerHTML = ''; // Limpia cualquier contenido previo
+            
+            if (files.length === 0) {
+                const noFilesMessage = document.createElement('div');
+                noFilesMessage.classList.add('alert', 'alert-warning');
+                noFilesMessage.textContent = 'No se seleccionaron archivos.';
+                output.appendChild(noFilesMessage);
+                return;
+            }
+            
+            const table = document.createElement('table');
+            table.classList.add('table', 'table-striped', 'mt-3');
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre del Archivo</th>
+                        <th>Dato Extraído</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
+            const tbody = table.querySelector('tbody');
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileName = file.name; // Nombre del archivo
+                const id = extractDataFromFileName(fileName); // Extrae datos del nombre
+                
+                const formData = new FormData();
+                formData.append('idPedido', id); // Envía el ID
+                formData.append('imagen', file); // Envía la imagen
+
+                fetch('http://localhost:8000/api/pedidos/crearMazivo', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    output.innerHTML += `
+                        <div class="alert alert-success">Archivo con ID ${id} enviado: ${JSON.stringify(data)}</div>
+                    `;
+                })
+                .catch(error => {
+                    console.log("Ocurrio un error subiendo " + fileName)
+                    output.innerHTML += `
+                        <div class="alert alert-danger">Error al enviar archivo con ID ${id}: ${error.message}</div>
+                    `;
+                });
+                // Añade una fila a la tabla
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${fileName}</td>
+                    <td>${id}</td>
+                `;
+                tbody.appendChild(row);
+
+            }
+            
+            output.appendChild(table);
+        });
+
+        // Función para extraer datos del nombre del archivo
+        function extractDataFromFileName(fileName) {
+            // Ejemplo: Extraer un dato específico del nombre
+            // Supongamos que el formato es "dato1_dato2_dato3.ext"
+            const nameWithoutExtension = fileName.split('.').slice(0, -1).join('.'); // Elimina la extensión
+            const parts = nameWithoutExtension.split('-'); // Divide el nombre por guiones bajos
+            return parts[2]; // Devuelve el primer dato (ajústalo según tu necesidad)
+        }
+    </script>
+</body>
+</html>
