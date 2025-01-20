@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework import routers
-from .apiviews import PedidosViewSet, PedidoList, ActualizarEstadoPedido, crearactualizarpedido,PedidoDetalle, crearactualizarimagenpedido, crearactualizarimagenpedidoMazivo
+from .apiviews import PedidosViewSet, PedidoList, ActualizarEstadoPedido, crearactualizarpedido,PedidoDetalle, crearactualizarimagenpedido
 
 
 
