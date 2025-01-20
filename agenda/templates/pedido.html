@@ -93,7 +93,7 @@ window.onload = async (e) =>{
     formMapper.mapToForm(['nombre_cliente'] , pedido.cliente);
     
 
-    if(pedido.imagenUrl != null){
+    if(pedido.imagenUrlExternal != null){
       /*
       const byteCharacters = atob(pedido.imagen);
       const byteNumbers = new Array(byteCharacters.length);
@@ -118,85 +118,103 @@ window.onload = async (e) =>{
       document.getElementById("imgShow").src = urlImagenPedido ;
       document.getElementById("noImage").style = "display : none";
     }
-    
+      
   }
-  
-  const formulario = document.getElementById('formulario');
-
-  formulario.addEventListener('submit', async function(event) {
-    // Evitamos que se envíe el formulario automáticamente
-    event.preventDefault();
-    console.log("Previniendo")
-   
-    const datosJson = formMapper.mapFormToJson(formulario);
-
-    // Imprimir los datos en formato JSON
-    
-    console.log(datosJson);
-    datosJson['idPedido'] = idPedido ; 
-    let params = {
-      url : `api/pedidos/crearactualizar`,
-      body : datosJson,
-      headers
-    }
-    let result ; 
-    const imagen = document.getElementById('imagen').files[0];
-      console.log("wo a ver que tiene imagen")
-    if(idPedido == "None")
-    {
-      result = await restService.post(params);
-      console.log(result);
-      idPedido = result.idPedido
-    }else{
-      result = await restService.patch(params);
-      //console.log(imagen)
-        // Creamos un nuevo FormData para enviar la imagen
-    }
-    let formDataImagen = new FormData();
-    if(imagen != undefined){
-      formDataImagen.append('imagen', imagen);
-    }
-    formDataImagen.append('idPedido', idPedido);
-    const options = {
-      method: 'POST',
-      headers: {
-        //'Content-Type': 'multipart/form-data;',
-        'X-CSRFToken': csrftoken,
-        //'User-Agent': 'insomnia/9.1.0'
-      }
-    };
-    options.body = formDataImagen;
-    //const urlServer = 'http://localhost:8000/api/pedidos/imagen' ; //Desarrollo
-    const urlServer = 'https://app-pasteleria-production.up.railway.app/api/pedidos/imagen' ; //produccion
-    fetch(urlServer, options)
-      .then(response => response.json())
-      .then(response => {
-        console.log("Pase del then")
-        console.log(response)})
-      .catch(err => {
-        console.log("Trono esta chingadera")
-        console.error(err)
-      });
-    
-    console.log(result);
-    Swal.fire({
-      title: "<strong>Pedido Guardado Con Exito</strong>",
-      icon: "success",
-      html: `En caso de que no se guarde la imagen, favor de subirlo de nuevo, en caso de que no se guarde, favor de enviarle este folio al Administrador: ${idPedido}` ,
-      showCloseButton: true,
-      showCancelButton: false,
-      focusConfirm: false,
-      confirmButtonText: `
-        <a class="btn btn-primary" href="/agenda/pedido/${idPedido}">Aceptar</a>
-      `,
-      confirmButtonAriaLabel: "Thumbs up, great!",
-      cancelButtonText: `
-        <i class="fa fa-thumbs-down"></i>
-      `,
-      cancelButtonAriaLabel: "Thumbs down"
-    });
-     
-  });
 }
+
+const formulario = document.getElementById('formulario');
+
+formulario.addEventListener('submit', async function(event) {
+  // Evitamos que se envíe el formulario automáticamente
+  event.preventDefault();
+  console.log("Previniendo")
+  
+  const datosJson = formMapper.mapFormToJson(formulario);
+
+  // Imprimir los datos en formato JSON
+  
+  console.log(datosJson);
+  datosJson['idPedido'] = idPedido ; 
+  let params = {
+    url : `api/pedidos/crearactualizar`,
+    body : datosJson,
+    headers
+  }
+  let result ; 
+  const imagen = document.getElementById('imagen').files[0];
+    console.log("wo a ver que tiene imagen")
+  if(idPedido == "None")
+  {
+    result = await restService.post(params);
+    console.log(result);
+    idPedido = result.idPedido
+  }else{
+    result = await restService.patch(params);
+    //console.log(imagen)
+      // Creamos un nuevo FormData para enviar la imagen
+  }
+  let formDataImagen = new FormData();
+  if(imagen != undefined){
+    formDataImagen.append('imagen', imagen);
+  }
+  formDataImagen.append('idPedido', idPedido);
+  const options = {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': csrftoken
+    }
+  };
+  options.body = formDataImagen;
+  //const urlServer = 'http://localhost:8000/api/pedidos/imagen' ; //Desarrollo
+  const urlServer = 'https://app-pasteleria-production.up.railway.app/api/pedidos/imagen' ; //produccion
+  fetch(urlServer, options)
+    .then(response => response.json())
+    .then(response => {
+      console.log("Pase del then")
+      console.log(response)
+      Swal.fire({
+        title: "<strong>Pedido Guardado Con Exito</strong>",
+        icon: "success",
+        html: `En caso de que no se guarde la imagen, favor de subirlo de nuevo, en caso de que no se guarde, favor de enviarle este folio al Administrador: ${idPedido}` ,
+        showCloseButton: true,
+        showCancelButton: false,
+        focusConfirm: false,
+        confirmButtonText: `
+          <a class="btn btn-primary" href="/agenda/pedido/${idPedido}">Aceptar</a>
+        `,
+        confirmButtonAriaLabel: "Thumbs up, great!",
+        cancelButtonText: `
+          <i class="fa fa-thumbs-down"></i>
+        `,
+        cancelButtonAriaLabel: "Thumbs down"
+      });
+    })
+    .catch(err => {
+      console.log("Trono esta chingadera")
+      console.error(err)
+      Swal.fire({
+        title: "<strong>Pedido Guardado Con Detalles</strong>",
+        icon: "info",
+        html: `favor de enviarle este folio al Administrador: ${idPedido} con el siguiente mensaje ${err.message}` ,
+        showCloseButton: true,
+        showCancelButton: false,
+        focusConfirm: false,
+        confirmButtonText: `
+          <a class="btn btn-primary" href="/agenda/pedido/${idPedido}">Aceptar</a>
+        `,
+        confirmButtonAriaLabel: "Thumbs up, great!",
+        cancelButtonText: `
+          <i class="fa fa-thumbs-down"></i>
+        `,
+        cancelButtonAriaLabel: "Thumbs down"
+      });
+    });
+  
+  //console.log(result);
+  
+    
+});
+
+
 </script>
 {% endblock %}
