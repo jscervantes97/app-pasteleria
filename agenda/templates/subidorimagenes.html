@@ -41,8 +41,7 @@
             table.innerHTML = `
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Nombre del Archivo</th>
+                        
                         <th>Dato Extraído</th>
                     </tr>
                 </thead>
@@ -58,7 +57,8 @@
                 const formData = new FormData();
                 formData.append('idPedido', id); // Envía el ID
                 formData.append('imagen', file); // Envía la imagen
-
+                
+                /*
                 fetch('http://localhost:8000/api/pedidos/crearMazivo', {
                     method: 'POST',
                     body: formData,
@@ -76,11 +76,10 @@
                     `;
                 });
                 // Añade una fila a la tabla
+                */
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${i + 1}</td>
-                    <td>${fileName}</td>
-                    <td>${id}</td>
+                    <td>${getQueryUpdate(fileName)}</td>
                 `;
                 tbody.appendChild(row);
 
@@ -96,6 +95,15 @@
             const nameWithoutExtension = fileName.split('.').slice(0, -1).join('.'); // Elimina la extensión
             const parts = nameWithoutExtension.split('-'); // Divide el nombre por guiones bajos
             return parts[2]; // Devuelve el primer dato (ajústalo según tu necesidad)
+        }
+
+        function getQueryUpdate(fileName) {
+            // Ejemplo: Extraer un dato específico del nombre
+            // Supongamos que el formato es "dato1_dato2_dato3.ext"
+            const nameWithoutExtension = fileName.split('.').slice(0, -1).join('.'); // Elimina la extensión
+            const parts = nameWithoutExtension.split('-'); // Divide el nombre por guiones bajos
+            let query = `update agenda_pedido set "imagenUrlExternal" = 'https://api.floristeriatulipan.com/media/pasteleria/${parts[2]}-${fileName}' where id = ${parts[2]} ;  `;
+            return query; // Devuelve el primer dato (ajústalo según tu necesidad)
         }
     </script>
 </body>
