@@ -156,7 +156,7 @@ def crearactualizarimagenpedido(request):
                 # Actualizar los datos en el modelo local
                 #pedido.imagen = None
                 #pedido.imagenUrl = imagen  # Guardar la URL devuelta por la API
-                #pedido.imagenUrlExternal = image_url
+                #pedido.imagenUrlExternal = image_urlg
                 pedido.imagenUrlExternal = f"{url_server}/{image_url}"
                 pedido.save()
                 print(f"Se guardo la imagen del pedido con la url externa {url_server}/{image_url}")
