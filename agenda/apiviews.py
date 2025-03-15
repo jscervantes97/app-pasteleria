@@ -101,27 +101,6 @@ def crearactualizarpedido(request):
     else:
         return Response({"message": "No Supported method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-@api_view(['POST', 'PATCH'])
-def crearactualizarimagenpedidoDeprecado(request):
-    # Obtener los datos de la solicitud
-    pedido_id = request.POST.get('idPedido')
-    imagen = request.FILES.get('imagen')
-    
-    print(pedido_id)
-    print(imagen)
-    # Verificar si el pedido existe
-    pedido = get_object_or_404(Pedido, id=pedido_id)
-
-    # Actualizar o crear la imagen asociada al pedido
-    if imagen:
-        pedido.imagen = None #imagen.read()
-        pedido.imagenUrl = imagen
-        pedido.save()
-        return Response({'detail': 'Imagen actualizada correctamente'}, status=status.HTTP_200_OK)
-    else:
-        #pedido.imagen = None
-        #pedido.save()
-        return Response({'detail': 'Se guardo el registro sin imagen'}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST', 'PATCH'])
@@ -202,7 +181,7 @@ def crearactualizarimagenpedido(request):
     else:
         # Guardar el pedido sin imagen
         print(f"el pedido {pedido_id} se guardo sin ninguna imagen")
-        pedido.imagen = None
+        #pedido.imagen = None
         pedido.save()
         return Response({'detail': 'Se guardó el registro sin imagen'}, status=status.HTTP_200_OK)
     
