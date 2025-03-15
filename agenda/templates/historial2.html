@@ -1,0 +1,31 @@
+{% extends 'base_app.html' %}
+{% block content %}
+<div class="text-center"><h2>Historial Pedidos</h2></div>
+<table id="myTable" class="table">
+    <thead>
+      <tr>
+        <th scope="col"># Pedido</th>
+        <th scope="col">Fecha Hora Entrega</th>
+        <th scope="col">Cliente</th>
+        <th scope="col">Estatus</th>
+        <th>Acciones</th>
+        <th>descripcion</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for pedido in pedidos %}
+        <tr>
+            <th scope="row">{{pedido.id}}</th>
+            <td>{{ pedido.fecha_entrega | date}}</td>
+            <td>{{ pedido.cliente.nombre_cliente }}</td>
+            <!--<td> {% if pedido.estatus == 0 %} {{"Cancelado"}} {% elif pedido.estatus == 1 %} {{"En espera"}}{% elif pedido.estatus == 2 %} {{"Entregado"}} {% endif %} </td> -->
+            <td>{{ pedido.cliente.estatus }}  </td>
+            <td>
+                <a href="pedido/{{pedido.id}}" class="btn btn-primary btn-sm">Visualizar</a>
+            </td>
+            <td>{{ pedido.descripcion }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

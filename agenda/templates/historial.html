@@ -1,7 +1,7 @@
 {% extends 'base_app.html' %}
 {% block content %}
 <div class="text-center"><h2>Historial Pedidos</h2></div>
-
+<!--
 <table id="myTable" class="table">
     <thead>
       <tr>
@@ -29,6 +29,7 @@
     </tbody>
 </table>
 
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
@@ -39,7 +40,7 @@ $(document).ready(function() {
     searching: true,
     ordering: true,
     language: {
-        url: 'static/es-ES.json',
+       // url: 'static/es-ES.json',
     },columnDefs: [
       {
         targets: 5, // Índice de la columna "Descripción" (0 basado)
@@ -53,4 +54,5 @@ $(document).ready(function() {
 });
 
 </script>
+-->
 {% endblock %}

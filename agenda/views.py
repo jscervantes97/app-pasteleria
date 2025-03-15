@@ -18,13 +18,15 @@ def renderlogin(request):
     return render(request, 'login.html')
 
 def renderhistorial(request):
-    clientes = Cliente.objects.all()
+    #clientes = Cliente.objects.all()
+    print("Ejecutando renderhistorial")
     pedidos = Pedido.objects.all()
-    
+    print(pedidos)
     return render(request, 'historial.html', {
-        "clientes" : clientes,
         "pedidos" : pedidos
     })
+
+
 
 def renderpedido(request, idPedido=None):
     tituloForm = 'Editar Pedido'
