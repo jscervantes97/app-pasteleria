@@ -25,7 +25,7 @@ class Pedido(models.Model):
     anticipo = models.CharField(max_length=300, null=True, blank=True)
     restante = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     estatus = models.IntegerField(default=1) 
-    imagenUrl = models.ImageField(upload_to='images/' , null=True)
+    #imagenUrl = models.ImageField(upload_to='images/' , null=True)
     celular = models.CharField(max_length=100,blank=True)
     imagenUrlExternal = models.TextField(default="")
 
