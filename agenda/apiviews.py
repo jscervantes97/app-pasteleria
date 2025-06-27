@@ -10,8 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Pedido, Cliente
 from .serializers import PedidoSerializer, HistoricoPedidoSerializer
 from .filters import PedidoFilter
-from decimal import Decimal
-from django.http import HttpResponse
+
+from django.db.models import Q
 
 
 import requests
@@ -192,11 +192,12 @@ class PedidoDatatableAPIView(APIView):
         length = int(request.GET.get("length", 10))
         search_value = request.GET.get("search[value]", "")
 
-        pedidos = Pedido.objects.select_related('cliente')
+        pedidos = Pedido.objects.select_related('cliente').order_by('id')
 
         if search_value:
             pedidos = pedidos.filter(
-                descripcion__icontains=search_value
+                Q(descripcion__icontains=search_value) |
+                Q(cliente__nombre_cliente__icontains=search_value)
             )
 
         total = pedidos.count()

@@ -27,13 +27,16 @@ $(document).ready(function () {
     $('#myTable').DataTable({
         processing: true,
         serverSide: true,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/2.0.5/i18n/es-ES.json',
+        },
         ajax: {
             url: "/api/pedidos/datatable/",
             dataSrc: 'data'
         },
         columns: [
             { data: 'id' },
-            { data: 'fecha_entrega' },
+            { data: 'fecha_entrega_formateada' },
             { data: 'cliente_nombre' },
             {
                 data: 'estatus_display'

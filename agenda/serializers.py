@@ -17,12 +17,14 @@ class PedidoSerializer(serializers.ModelSerializer):
 class HistoricoPedidoSerializer(serializers.ModelSerializer):
     cliente_nombre = serializers.CharField(source="cliente.nombre_cliente", read_only=True)
     estatus_display = serializers.SerializerMethodField()
+    fecha_entrega_formateada = serializers.SerializerMethodField()
 
     class Meta:
         model = Pedido
         fields = [
             'id',
             'fecha_entrega',
+            'fecha_entrega_formateada',
             'estatus',
             'estatus_display',
             'descripcion',
@@ -36,3 +38,9 @@ class HistoricoPedidoSerializer(serializers.ModelSerializer):
             2: "Entregado"
         }
         return mapping.get(obj.estatus, "Desconocido")
+    
+    def get_fecha_entrega_formateada(self, obj):
+        if obj.fecha_entrega:
+            return obj.fecha_entrega.strftime("%H:%M %d/%m/%Y")
+        return ""
+    
