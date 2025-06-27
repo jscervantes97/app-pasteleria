@@ -175,6 +175,11 @@ CORS_ALLOWED_ORIGINS = [
     "https://app-pasteleria-production.up.railway.app",
     "https://tu-dominio-adicional.com",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,  # O el número que desees mostrar por página
+}
 # En settings.py
 
 #import locale

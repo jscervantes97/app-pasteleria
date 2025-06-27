@@ -14,18 +14,7 @@
       </tr>
     </thead>
     <tbody>
-        {% for pedido in pedidos %}
-        <tr>
-            <th scope="row">{{pedido.id}}</th>
-            <td>{{ pedido.fecha_entrega | date}}</td>
-            <td>{{ pedido.cliente.nombre_cliente }}</td>
-            <td> {% if pedido.estatus == 0 %} {{"Cancelado"}} {% elif pedido.estatus == 1 %} {{"En espera"}}{% elif pedido.estatus == 2 %} {{"Entregado"}} {% endif %} </td>
-            <td>
-                <a href="pedido/{{pedido.id}}" class="btn btn-primary btn-sm">Visualizar</a>
-            </td>
-            <td>{{ pedido.descripcion }}</td>
-        </tr>
-        {% endfor %}
+        
     </tbody>
 </table>
 
@@ -34,6 +23,36 @@
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <script>
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "/api/pedidos/datatable/",
+            dataSrc: 'data'
+        },
+        columns: [
+            { data: 'id' },
+            { data: 'fecha_entrega' },
+            { data: 'cliente_nombre' },
+            {
+                data: 'estatus_display'
+            },
+            {
+                data: 'id',
+                render: function (data) {
+                    return `<a href="pedido/${data}" class="btn btn-primary btn-sm">Visualizar</a>`;
+                }
+            },
+            { data: 'descripcion', visible: false, searchable: true }
+        ],
+        language: {
+            // url: '/static/es-ES.json'  // si usas traducción
+        }
+    });
+});
+
+/*
 $(document).ready(function() {
   $('#myTable').DataTable({
     paging: true,
@@ -52,6 +71,7 @@ $(document).ready(function() {
     // Más opciones aquí
   });
 });
+*/
 
 </script>
 

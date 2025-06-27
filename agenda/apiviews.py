@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from .models import Pedido, Cliente
-from .serializers import PedidoSerializer
+from .serializers import PedidoSerializer, HistoricoPedidoSerializer
 from .filters import PedidoFilter
 from decimal import Decimal
 from django.http import HttpResponse
@@ -184,7 +184,34 @@ def crearactualizarimagenpedido(request):
         #pedido.imagen = None
         pedido.save()
         return Response({'detail': 'Se guardó el registro sin imagen'}, status=status.HTTP_200_OK)
-    
+
+class PedidoDatatableAPIView(APIView):
+    def get(self, request):
+        draw = int(request.GET.get("draw", 1))
+        start = int(request.GET.get("start", 0))
+        length = int(request.GET.get("length", 10))
+        search_value = request.GET.get("search[value]", "")
+
+        pedidos = Pedido.objects.select_related('cliente')
+
+        if search_value:
+            pedidos = pedidos.filter(
+                descripcion__icontains=search_value
+            )
+
+        total = pedidos.count()
+        pedidos = pedidos[start:start + length]
+
+        serializer = HistoricoPedidoSerializer(pedidos, many=True)
+
+        return Response({
+            "draw": draw,
+            "recordsTotal": total,
+            "recordsFiltered": total,
+            "data": serializer.data
+        })
+
+
 """
 @api_view(['POST'])
 def crearactualizarimagenpedidoMazivo(request):

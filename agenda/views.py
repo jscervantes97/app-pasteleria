@@ -20,10 +20,10 @@ def renderlogin(request):
 def renderhistorial(request):
     #clientes = Cliente.objects.all()
     print("Ejecutando renderhistorial")
-    pedidos = Pedido.objects.all()
-    print(pedidos)
+    #pedidos = Pedido.objects.all()[:10]
+    #print(pedidos)
     return render(request, 'historial.html', {
-        "pedidos" : pedidos
+        "pedidos" : None
     })
 
 
