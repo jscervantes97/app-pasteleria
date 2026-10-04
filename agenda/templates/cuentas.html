@@ -1,0 +1,80 @@
+{% extends 'base_app.html' %}
+{% block content %}
+<div class="text-center"><h2 class="letraFusia">Control de Cuentas</h2></div>
+{% csrf_token %}
+
+<div class="mb-3 text-end">
+    <a href="/agenda/cuenta" class="btn btnFusia letraBlanca btn-sm">Nueva Cuenta</a>
+</div>
+
+<table id="myTableCuentas" class="table">
+    <thead>
+      <tr>
+        <th scope="col">Fecha</th>
+        <th scope="col">Ingreso</th>
+        <th scope="col">Gasto</th>
+        <th scope="col">Total</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script>
+  function formatoMoneda(valor) {
+    const numero = parseFloat(valor);
+    return isNaN(numero) ? '$0.00' : '$' + numero.toFixed(2);
+  }
+
+  async function eliminarCuenta(id) {
+    let respuestaDialog = await Swal.fire({
+      title: 'Confirma que quieres eliminar esta cuenta',
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: 'Si',
+      denyButtonText: 'No',
+    });
+    if (!respuestaDialog.isConfirmed) return;
+
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const headers = { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken };
+    await restService.post({ url: 'api/cuentas/eliminar', body: { idCuenta: parseInt(id) }, headers });
+
+    await Swal.fire({ title: 'Cuenta eliminada', confirmButtonText: 'Aceptar' });
+    $('#myTableCuentas').DataTable().ajax.reload();
+  }
+
+  $(document).ready(function () {
+    $('#myTableCuentas').DataTable({
+        processing: true,
+        serverSide: true,
+        ordering: false,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/2.0.5/i18n/es-ES.json'
+        },
+        ajax: {
+            url: "/api/cuentas/datatable/",
+            dataSrc: 'data'
+        },
+        columns: [
+            { data: 'fecha_formateada' },
+            { data: 'ingreso', render: (data) => formatoMoneda(data) },
+            { data: 'gasto', render: (data) => formatoMoneda(data) },
+            { data: 'total', render: (data) => formatoMoneda(data) },
+            {
+                data: 'id',
+                render: function (data) {
+                    return `<a href="cuenta/${data}" class="btn btnMorado letraBlanca btn-sm">Editar</a>
+                            <button onclick="eliminarCuenta('${data}')" class="btn btnRosa letraBlanca btn-sm">Eliminar</button>`;
+                }
+            }
+        ]
+    });
+  });
+</script>
+{% endblock %}

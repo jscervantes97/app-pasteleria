@@ -1,4 +1,5 @@
 import requests
+from decimal import Decimal, InvalidOperation
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework import generics
@@ -7,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
-from .models import Pedido, Cliente
-from .serializers import PedidoSerializer, HistoricoPedidoSerializer
+from .models import Pedido, Cliente, Cuenta
+from .serializers import PedidoSerializer, HistoricoPedidoSerializer, CuentaSerializer
 from .filters import PedidoFilter
 
 from django.db.models import Q
@@ -211,6 +212,68 @@ class PedidoDatatableAPIView(APIView):
             "recordsFiltered": total,
             "data": serializer.data
         })
+
+
+class CuentaDatatableAPIView(APIView):
+    def get(self, request):
+        draw = int(request.GET.get("draw", 1))
+        start = int(request.GET.get("start", 0))
+        length = int(request.GET.get("length", 10))
+
+        cuentas = Cuenta.objects.all().order_by('-fecha', '-id')
+
+        total = cuentas.count()
+        cuentas = cuentas[start:start + length]
+
+        serializer = CuentaSerializer(cuentas, many=True)
+
+        return Response({
+            "draw": draw,
+            "recordsTotal": total,
+            "recordsFiltered": total,
+            "data": serializer.data
+        })
+
+
+class CuentaDetalle(generics.RetrieveAPIView):
+    queryset = Cuenta.objects.all()
+    serializer_class = CuentaSerializer
+    lookup_field = 'id'
+
+
+@api_view(['POST', 'PATCH'])
+def crearactualizarcuenta(request):
+    try:
+        ingreso = Decimal(request.data.get('ingreso') or 0)
+        gasto = Decimal(request.data.get('gasto') or 0)
+    except InvalidOperation:
+        return Response({"message": "Ingreso y gasto deben ser numéricos"}, status=status.HTTP_400_BAD_REQUEST)
+
+    total = ingreso - gasto
+
+    if request.method == 'POST':
+        cuenta = Cuenta(fecha=request.data.get('fecha'), ingreso=ingreso, gasto=gasto, total=total)
+        cuenta.save()
+        return Response({"message": "Éxito al crear la cuenta", "idCuenta": cuenta.id}, status=status.HTTP_200_OK)
+    elif request.method == 'PATCH':
+        idCuenta = request.data.get('idCuenta')
+        cuenta = get_object_or_404(Cuenta, pk=idCuenta)
+        cuenta.fecha = request.data.get('fecha')
+        cuenta.ingreso = ingreso
+        cuenta.gasto = gasto
+        cuenta.total = total
+        cuenta.save()
+        return Response({"message": "Éxito al actualizar la cuenta"}, status=status.HTTP_200_OK)
+    else:
+        return Response({"message": "No Supported method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@api_view(['DELETE', 'POST'])
+def eliminarcuenta(request):
+    idCuenta = request.data.get('idCuenta')
+    cuenta = get_object_or_404(Cuenta, pk=idCuenta)
+    cuenta.delete()
+    return Response({"message": "Cuenta eliminada"}, status=status.HTTP_200_OK)
 
 
 """

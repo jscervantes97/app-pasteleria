@@ -31,3 +31,17 @@ class Pedido(models.Model):
 
     def __str__(self):
         return f"Cliente: {self.cliente} - Fecha de Creación: {self.fecha_creacion} - Fecha de Entrega: {self.fecha_entrega} - Descripción: {self.descripcion} - Tamaño: {self.tamano} - Costo: {self.costo} - Anticipo: {self.anticipo} - Restante: {self.restante} - Estatus: {self.estatus}"
+
+class Cuenta(models.Model):
+    class Meta:
+        indexes = [
+            models.Index(fields=['fecha']),
+        ]
+    fecha = models.DateField()
+    ingreso = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    gasto = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    fecha_creacion = models.DateTimeField(null=True, auto_now_add=True, blank=True)
+
+    def __str__(self):
+        return f"{self.fecha} - Ingreso: {self.ingreso} - Gasto: {self.gasto} - Total: {self.total}"

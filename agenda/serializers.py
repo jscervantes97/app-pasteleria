@@ -1,5 +1,5 @@
-from rest_framework import serializers 
-from .models import Cliente, Pedido
+from rest_framework import serializers
+from .models import Cliente, Pedido, Cuenta
 
 
 class ClientesSerializer(serializers.ModelSerializer):
@@ -42,5 +42,17 @@ class HistoricoPedidoSerializer(serializers.ModelSerializer):
     def get_fecha_entrega_formateada(self, obj):
         if obj.fecha_entrega:
             return obj.fecha_entrega.strftime("%H:%M %d/%m/%Y")
+        return ""
+
+class CuentaSerializer(serializers.ModelSerializer):
+    fecha_formateada = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Cuenta
+        fields = ('id', 'fecha', 'fecha_formateada', 'ingreso', 'gasto', 'total')
+
+    def get_fecha_formateada(self, obj):
+        if obj.fecha:
+            return obj.fecha.strftime("%d/%m/%Y")
         return ""
     

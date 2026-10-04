@@ -1,5 +1,5 @@
-from django.urls import path 
-from .views import goindex, renderlogin, renderpedido, saveupdatepedido, renderhistorial, renderexample, renderSubidorImagenes
+from django.urls import path
+from .views import goindex, renderlogin, renderpedido, saveupdatepedido, renderhistorial, renderexample, renderSubidorImagenes, rendercuentas, rendercuenta
 
 urlpatterns = [
     path('' , goindex),
@@ -11,5 +11,9 @@ urlpatterns = [
     path('pedido/nuevo', saveupdatepedido, name="create_pedido"),
     path('example', renderexample),
     path('subidorimagenes', renderSubidorImagenes),
+    path('cuentas', rendercuentas),
+    path('cuenta', rendercuenta),
+    path('cuenta/', rendercuenta),
+    path('cuenta/<int:idCuenta>', rendercuenta),
 
 ]

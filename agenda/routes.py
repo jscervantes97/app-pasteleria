@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework import routers
-from .apiviews import PedidosViewSet, PedidoList, ActualizarEstadoPedido, crearactualizarpedido,PedidoDetalle, crearactualizarimagenpedido, PedidoDatatableAPIView
+from .apiviews import PedidosViewSet, PedidoList, ActualizarEstadoPedido, crearactualizarpedido,PedidoDetalle, crearactualizarimagenpedido, PedidoDatatableAPIView, CuentaDatatableAPIView, CuentaDetalle, crearactualizarcuenta, eliminarcuenta
 
 
 
@@ -19,6 +19,11 @@ urlpatterns = [
     path('api/pedidos/imagen', crearactualizarimagenpedido, name='crearactualizarimagenpedido'),
     path('api/pedidos/<int:id>/', PedidoDetalle.as_view(), name='pedido-detalle'),
     path('api/pedidos/datatable/', PedidoDatatableAPIView.as_view(), name='api_pedidos_datatable'),
+
+    path('api/cuentas/datatable/', CuentaDatatableAPIView.as_view(), name='api_cuentas_datatable'),
+    path('api/cuentas/crearactualizar', crearactualizarcuenta, name='crearactualizarcuenta'),
+    path('api/cuentas/eliminar', eliminarcuenta, name='eliminarcuenta'),
+    path('api/cuentas/<int:id>/', CuentaDetalle.as_view(), name='cuenta-detalle'),
 
 ]
 

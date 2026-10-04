@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Cliente, Pedido
+from .models import Cliente, Pedido, Cuenta
 
 
 
@@ -69,3 +69,20 @@ def saveupdatepedido(request, idPedido=None):
 
 def renderSubidorImagenes(request):
     return render(request, 'subidorimagenes.html')
+
+def rendercuentas(request):
+    return render(request, 'cuentas.html')
+
+def rendercuenta(request, idCuenta=None):
+    tituloForm = 'Editar Cuenta'
+    if idCuenta is None:
+        tituloForm = 'Nueva Cuenta'
+        cuenta = Cuenta()
+    else:
+        cuenta = Cuenta.objects.get(pk=idCuenta)
+
+    return render(request, 'cuenta.html', {
+        "idCuenta": idCuenta,
+        "tituloForm": tituloForm,
+        "cuenta": cuenta
+    })
