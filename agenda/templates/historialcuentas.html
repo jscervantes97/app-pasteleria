@@ -1,0 +1,71 @@
+{% extends 'base_app.html' %}
+{% block content %}
+<div class="text-center"><h2 class="letraFusia">Historial de Cuentas (por mes)</h2></div>
+{% csrf_token %}
+
+<div class="mb-3 text-end">
+    <a href="/agenda/cuentas" class="btn btnMorado letraBlanca btn-sm">Ver Mes Actual</a>
+    <button type="button" onclick="descargarHistorial()" class="btn btn-secondary btn-sm">
+        <i class="fas fa-download"></i> Descargar
+    </button>
+</div>
+
+<table id="myTableHistorialCuentas" class="table">
+    <thead>
+      <tr>
+        <th scope="col">Mes</th>
+        <th scope="col">Ingreso</th>
+        <th scope="col">Gasto</th>
+        <th scope="col">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script>
+  function formatoMoneda(valor) {
+    const numero = parseFloat(valor);
+    return isNaN(numero) ? '$0.00' : '$' + numero.toFixed(2);
+  }
+
+  function descargarHistorial() {
+    const termino = $('#myTableHistorialCuentas').DataTable().search();
+    const url = termino
+      ? `/agenda/cuentas/historial/descargar?buscar=${encodeURIComponent(termino)}`
+      : '/agenda/cuentas/historial/descargar';
+    window.location.href = url;
+  }
+
+  $(document).ready(function () {
+    $('#myTableHistorialCuentas').DataTable({
+        processing: true,
+        serverSide: true,
+        ordering: false,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/2.0.5/i18n/es-ES.json'
+        },
+        ajax: {
+            url: "/api/cuentas/historial/datatable/",
+            dataSrc: 'data'
+        },
+        columns: [
+            { data: 'mes_nombre' },
+            { data: 'ingreso', render: (data) => formatoMoneda(data) },
+            { data: 'gasto', render: (data) => formatoMoneda(data) },
+            {
+                data: 'total',
+                render: function (data) {
+                    const clase = parseFloat(data) < 0 ? 'text-danger' : 'text-success';
+                    return `<strong class="${clase}">${formatoMoneda(data)}</strong>`;
+                }
+            }
+        ]
+    });
+  });
+</script>
+{% endblock %}

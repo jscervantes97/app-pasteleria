@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import goindex, renderlogin, renderpedido, saveupdatepedido, renderhistorial, renderexample, renderSubidorImagenes, rendercuentas, rendercuenta
+from .views import goindex, renderlogin, renderpedido, saveupdatepedido, renderhistorial, renderexample, renderSubidorImagenes, rendercuentas, renderhistorialcuentas, descargarhistorialcuentas
 
 urlpatterns = [
     path('' , goindex),
@@ -12,8 +12,7 @@ urlpatterns = [
     path('example', renderexample),
     path('subidorimagenes', renderSubidorImagenes),
     path('cuentas', rendercuentas),
-    path('cuenta', rendercuenta),
-    path('cuenta/', rendercuenta),
-    path('cuenta/<int:idCuenta>', rendercuenta),
+    path('cuentas/historial', renderhistorialcuentas),
+    path('cuentas/historial/descargar', descargarhistorialcuentas),
 
 ]

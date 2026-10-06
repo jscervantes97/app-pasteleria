@@ -1,5 +1,8 @@
+import csv
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from .models import Cliente, Pedido, Cuenta
+from .apiviews import filtrar_historial_por_busqueda
 
 
 
@@ -73,16 +76,26 @@ def renderSubidorImagenes(request):
 def rendercuentas(request):
     return render(request, 'cuentas.html')
 
-def rendercuenta(request, idCuenta=None):
-    tituloForm = 'Editar Cuenta'
-    if idCuenta is None:
-        tituloForm = 'Nueva Cuenta'
-        cuenta = Cuenta()
-    else:
-        cuenta = Cuenta.objects.get(pk=idCuenta)
+def renderhistorialcuentas(request):
+    return render(request, 'historialcuentas.html')
 
-    return render(request, 'cuenta.html', {
-        "idCuenta": idCuenta,
-        "tituloForm": tituloForm,
-        "cuenta": cuenta
-    })
+def descargarhistorialcuentas(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="historial_cuentas.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Mes', 'Ingreso', 'Gasto', 'Total'])
+
+    busqueda = request.GET.get('buscar', '')
+    cuentas = Cuenta.objects.all()
+    cuentas = filtrar_historial_por_busqueda(cuentas, busqueda)
+
+    for cuenta in cuentas:
+        writer.writerow([
+            f"{cuenta.mes:02d}/{cuenta.anio}",
+            cuenta.ingreso,
+            cuenta.gasto,
+            cuenta.total
+        ])
+
+    return response

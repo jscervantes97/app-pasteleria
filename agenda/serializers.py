@@ -44,15 +44,18 @@ class HistoricoPedidoSerializer(serializers.ModelSerializer):
             return obj.fecha_entrega.strftime("%H:%M %d/%m/%Y")
         return ""
 
+NOMBRES_MESES = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+]
+
 class CuentaSerializer(serializers.ModelSerializer):
-    fecha_formateada = serializers.SerializerMethodField()
+    mes_nombre = serializers.SerializerMethodField()
 
     class Meta:
         model = Cuenta
-        fields = ('id', 'fecha', 'fecha_formateada', 'ingreso', 'gasto', 'total')
+        fields = ('id', 'anio', 'mes', 'mes_nombre', 'ingreso', 'gasto', 'total')
 
-    def get_fecha_formateada(self, obj):
-        if obj.fecha:
-            return obj.fecha.strftime("%d/%m/%Y")
-        return ""
+    def get_mes_nombre(self, obj):
+        return f"{NOMBRES_MESES[obj.mes - 1]} {obj.anio}"
     

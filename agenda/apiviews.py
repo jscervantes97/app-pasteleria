@@ -12,7 +12,9 @@ from .models import Pedido, Cliente, Cuenta
 from .serializers import PedidoSerializer, HistoricoPedidoSerializer, CuentaSerializer
 from .filters import PedidoFilter
 
-from django.db.models import Q
+from django.db.models import Q, CharField
+from django.db.models.functions import Cast
+from django.utils import timezone
 
 
 import requests
@@ -214,66 +216,98 @@ class PedidoDatatableAPIView(APIView):
         })
 
 
-class CuentaDatatableAPIView(APIView):
+def obtener_o_crear_cuenta_mes_actual():
+    """
+    Busca el renglon de Cuenta del mes/anio de HOY; si no existe (porque
+    es la primera vez que se entra en este mes), lo crea en 0. Asi la
+    pantalla de captura siempre tiene algo que mostrar/editar, y al
+    cambiar de mes automaticamente "empieza en 0" sin que nadie tenga que
+    crearlo a mano.
+    """
+    ahora = timezone.now()
+    cuenta, _ = Cuenta.objects.get_or_create(anio=ahora.year, mes=ahora.month)
+    return cuenta
+
+
+class ObtenerCuentaMesActualAPIView(APIView):
     def get(self, request):
-        draw = int(request.GET.get("draw", 1))
-        start = int(request.GET.get("start", 0))
-        length = int(request.GET.get("length", 10))
-
-        cuentas = Cuenta.objects.all().order_by('-fecha', '-id')
-
-        total = cuentas.count()
-        cuentas = cuentas[start:start + length]
-
-        serializer = CuentaSerializer(cuentas, many=True)
-
-        return Response({
-            "draw": draw,
-            "recordsTotal": total,
-            "recordsFiltered": total,
-            "data": serializer.data
-        })
+        cuenta = obtener_o_crear_cuenta_mes_actual()
+        return Response(CuentaSerializer(cuenta).data)
 
 
-class CuentaDetalle(generics.RetrieveAPIView):
-    queryset = Cuenta.objects.all()
-    serializer_class = CuentaSerializer
-    lookup_field = 'id'
-
-
-@api_view(['POST', 'PATCH'])
-def crearactualizarcuenta(request):
+@api_view(['POST'])
+def guardarcuentamesactual(request):
+    """
+    Siempre actualiza el renglon del mes/anio de HOY (nunca uno viejo) --
+    el cliente no manda ningun id, el backend decide cual es "el mes
+    actual" con su propio reloj para que no se pueda editar por error un
+    mes que ya paso.
+    """
     try:
         ingreso = Decimal(request.data.get('ingreso') or 0)
         gasto = Decimal(request.data.get('gasto') or 0)
     except InvalidOperation:
         return Response({"message": "Ingreso y gasto deben ser numéricos"}, status=status.HTTP_400_BAD_REQUEST)
 
-    total = ingreso - gasto
+    cuenta = obtener_o_crear_cuenta_mes_actual()
+    cuenta.ingreso = ingreso
+    cuenta.gasto = gasto
+    cuenta.total = ingreso - gasto
+    cuenta.save()
 
-    if request.method == 'POST':
-        cuenta = Cuenta(fecha=request.data.get('fecha'), ingreso=ingreso, gasto=gasto, total=total)
-        cuenta.save()
-        return Response({"message": "Éxito al crear la cuenta", "idCuenta": cuenta.id}, status=status.HTTP_200_OK)
-    elif request.method == 'PATCH':
-        idCuenta = request.data.get('idCuenta')
-        cuenta = get_object_or_404(Cuenta, pk=idCuenta)
-        cuenta.fecha = request.data.get('fecha')
-        cuenta.ingreso = ingreso
-        cuenta.gasto = gasto
-        cuenta.total = total
-        cuenta.save()
-        return Response({"message": "Éxito al actualizar la cuenta"}, status=status.HTTP_200_OK)
-    else:
-        return Response({"message": "No Supported method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    return Response(CuentaSerializer(cuenta).data, status=status.HTTP_200_OK)
 
 
-@api_view(['DELETE', 'POST'])
-def eliminarcuenta(request):
-    idCuenta = request.data.get('idCuenta')
-    cuenta = get_object_or_404(Cuenta, pk=idCuenta)
-    cuenta.delete()
-    return Response({"message": "Cuenta eliminada"}, status=status.HTTP_200_OK)
+def filtrar_historial_por_busqueda(queryset, busqueda):
+    """
+    Filtra el historial (un renglon por mes) por texto libre, contra
+    mes/anio/ingreso/gasto/total como texto (hay que castear: Postgres no
+    compara LIKE contra columnas numéricas sin convertirlas primero). Se
+    usa tanto en el datatable como en la descarga de CSV.
+    """
+    if not busqueda:
+        return queryset
+
+    return queryset.annotate(
+        anio_texto=Cast('anio', CharField()),
+        mes_texto=Cast('mes', CharField()),
+        ingreso_texto=Cast('ingreso', CharField()),
+        gasto_texto=Cast('gasto', CharField()),
+        total_texto=Cast('total', CharField()),
+    ).filter(
+        Q(anio_texto__icontains=busqueda) |
+        Q(mes_texto__icontains=busqueda) |
+        Q(ingreso_texto__icontains=busqueda) |
+        Q(gasto_texto__icontains=busqueda) |
+        Q(total_texto__icontains=busqueda)
+    )
+
+
+class HistorialCuentasAPIView(APIView):
+    """
+    El historial ya no es una agregacion -- cada renglon de Cuenta ES un
+    mes, asi que este datatable simplemente lista esos renglones.
+    """
+    def get(self, request):
+        draw = int(request.GET.get("draw", 1))
+        start = int(request.GET.get("start", 0))
+        length = int(request.GET.get("length", 10))
+        search_value = request.GET.get("search[value]", "")
+
+        cuentas = Cuenta.objects.all()
+        cuentas_filtradas = filtrar_historial_por_busqueda(cuentas, search_value)
+
+        total_filtrado = cuentas_filtradas.count()
+        pagina = cuentas_filtradas[start:start + length]
+
+        serializer = CuentaSerializer(pagina, many=True)
+
+        return Response({
+            "draw": draw,
+            "recordsTotal": cuentas.count(),
+            "recordsFiltered": total_filtrado,
+            "data": serializer.data
+        })
 
 
 """

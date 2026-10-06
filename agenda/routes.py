@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework import routers
-from .apiviews import PedidosViewSet, PedidoList, ActualizarEstadoPedido, crearactualizarpedido,PedidoDetalle, crearactualizarimagenpedido, PedidoDatatableAPIView, CuentaDatatableAPIView, CuentaDetalle, crearactualizarcuenta, eliminarcuenta
+from .apiviews import PedidosViewSet, PedidoList, ActualizarEstadoPedido, crearactualizarpedido,PedidoDetalle, crearactualizarimagenpedido, PedidoDatatableAPIView, ObtenerCuentaMesActualAPIView, guardarcuentamesactual, HistorialCuentasAPIView
 
 
 
@@ -20,10 +20,9 @@ urlpatterns = [
     path('api/pedidos/<int:id>/', PedidoDetalle.as_view(), name='pedido-detalle'),
     path('api/pedidos/datatable/', PedidoDatatableAPIView.as_view(), name='api_pedidos_datatable'),
 
-    path('api/cuentas/datatable/', CuentaDatatableAPIView.as_view(), name='api_cuentas_datatable'),
-    path('api/cuentas/crearactualizar', crearactualizarcuenta, name='crearactualizarcuenta'),
-    path('api/cuentas/eliminar', eliminarcuenta, name='eliminarcuenta'),
-    path('api/cuentas/<int:id>/', CuentaDetalle.as_view(), name='cuenta-detalle'),
+    path('api/cuentas/mesactual/', ObtenerCuentaMesActualAPIView.as_view(), name='api_cuentas_mes_actual'),
+    path('api/cuentas/mesactual/guardar', guardarcuentamesactual, name='api_cuentas_mes_actual_guardar'),
+    path('api/cuentas/historial/datatable/', HistorialCuentasAPIView.as_view(), name='api_cuentas_historial_datatable'),
 
 ]
 
