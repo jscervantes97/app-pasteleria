@@ -1,5 +1,7 @@
-const urlServer = 'http://localhost:8000' ; //Desarrollo
-//const urlServer = 'https://app-pasteleria-production.up.railway.app' ; //produccion
+// Se toma del lugar donde se abrio la pagina: en desarrollo queda
+// http://localhost:8000 y en Railway la URL de produccion, sin tener que
+// cambiar nada antes de subir.
+const urlServer = window.location.origin;
 
 const restService = {
 
