@@ -1,3 +1,4 @@
+import datetime
 import requests
 from decimal import Decimal, InvalidOperation
 from django.shortcuts import get_object_or_404
@@ -8,8 +9,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
-from .models import Pedido, Cliente, Cuenta
-from .serializers import PedidoSerializer, HistoricoPedidoSerializer, CuentaSerializer
+from .models import Pedido, Cliente, Cuenta, MovimientoCuenta
+from .serializers import PedidoSerializer, HistoricoPedidoSerializer, CuentaSerializer, CuentaConMovimientosSerializer
 from .filters import PedidoFilter
 
 from django.db.models import Q, CharField
@@ -232,30 +233,64 @@ def obtener_o_crear_cuenta_mes_actual():
 class ObtenerCuentaMesActualAPIView(APIView):
     def get(self, request):
         cuenta = obtener_o_crear_cuenta_mes_actual()
-        return Response(CuentaSerializer(cuenta).data)
+        return Response(CuentaConMovimientosSerializer(cuenta).data)
 
 
 @api_view(['POST'])
-def guardarcuentamesactual(request):
+def guardarmovimientocuenta(request):
     """
-    Siempre actualiza el renglon del mes/anio de HOY (nunca uno viejo) --
-    el cliente no manda ningun id, el backend decide cual es "el mes
-    actual" con su propio reloj para que no se pueda editar por error un
-    mes que ya paso.
+    Crea (sin "id") o edita (con "id") un movimiento del mes actual y
+    recalcula los totales del mes. Solo se aceptan fechas del mes/anio de
+    HOY (el backend decide cual es con su propio reloj) para que no se
+    pueda editar por error un mes que ya paso. Regresa la cuenta completa
+    con sus movimientos, para que la pantalla se redibuje con eso.
     """
-    try:
-        ingreso = Decimal(request.data.get('ingreso') or 0)
-        gasto = Decimal(request.data.get('gasto') or 0)
-    except InvalidOperation:
-        return Response({"message": "Ingreso y gasto deben ser numéricos"}, status=status.HTTP_400_BAD_REQUEST)
-
     cuenta = obtener_o_crear_cuenta_mes_actual()
-    cuenta.ingreso = ingreso
-    cuenta.gasto = gasto
-    cuenta.total = ingreso - gasto
-    cuenta.save()
 
-    return Response(CuentaSerializer(cuenta).data, status=status.HTTP_200_OK)
+    try:
+        fecha = datetime.date.fromisoformat(request.data.get('fecha') or '')
+    except ValueError:
+        return Response({"message": "La fecha no es válida"}, status=status.HTTP_400_BAD_REQUEST)
+    if fecha.year != cuenta.anio or fecha.month != cuenta.mes:
+        return Response({"message": "La fecha debe ser del mes actual"}, status=status.HTTP_400_BAD_REQUEST)
+
+    tipo = request.data.get('tipo')
+    if tipo not in (MovimientoCuenta.TIPO_INGRESO, MovimientoCuenta.TIPO_GASTO):
+        return Response({"message": "El tipo debe ser ingreso o gasto"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        monto = Decimal(str(request.data.get('monto') or 0))
+    except InvalidOperation:
+        return Response({"message": "El monto debe ser numérico"}, status=status.HTTP_400_BAD_REQUEST)
+    if monto <= 0:
+        return Response({"message": "El monto debe ser mayor a 0"}, status=status.HTTP_400_BAD_REQUEST)
+
+    descripcion = (request.data.get('descripcion') or '').strip()[:300]
+
+    id_movimiento = request.data.get('id')
+    if id_movimiento:
+        movimiento = get_object_or_404(MovimientoCuenta, id=id_movimiento, cuenta=cuenta)
+    else:
+        movimiento = MovimientoCuenta(cuenta=cuenta)
+    movimiento.fecha = fecha
+    movimiento.tipo = tipo
+    movimiento.descripcion = descripcion
+    movimiento.monto = monto
+    movimiento.save()
+
+    cuenta.recalcular_totales()
+    return Response(CuentaConMovimientosSerializer(cuenta).data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def eliminarmovimientocuenta(request):
+    """Borra un movimiento del mes actual y recalcula los totales del mes."""
+    cuenta = obtener_o_crear_cuenta_mes_actual()
+    movimiento = get_object_or_404(MovimientoCuenta, id=request.data.get('id'), cuenta=cuenta)
+    movimiento.delete()
+
+    cuenta.recalcular_totales()
+    return Response(CuentaConMovimientosSerializer(cuenta).data, status=status.HTTP_200_OK)
 
 
 def filtrar_historial_por_busqueda(queryset, busqueda):

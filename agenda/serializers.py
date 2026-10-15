@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cliente, Pedido, Cuenta
+from .models import Cliente, Pedido, Cuenta, MovimientoCuenta
 
 
 class ClientesSerializer(serializers.ModelSerializer):
@@ -58,4 +58,17 @@ class CuentaSerializer(serializers.ModelSerializer):
 
     def get_mes_nombre(self, obj):
         return f"{NOMBRES_MESES[obj.mes - 1]} {obj.anio}"
+
+
+class MovimientoCuentaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovimientoCuenta
+        fields = ('id', 'fecha', 'tipo', 'descripcion', 'monto')
+
+
+class CuentaConMovimientosSerializer(CuentaSerializer):
+    movimientos = MovimientoCuentaSerializer(many=True, read_only=True)
+
+    class Meta(CuentaSerializer.Meta):
+        fields = CuentaSerializer.Meta.fields + ('movimientos',)
     

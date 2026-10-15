@@ -1,31 +1,146 @@
 {% extends 'base_app.html' %}
 {% block content %}
+<style>
+    /* Hoja estilo Excel: cuadricula gris, encabezados grises, numero de
+       renglon a la izquierda y celdas que se editan directo. */
+    .hoja-excel {
+        overflow-x: auto;
+        max-width: 900px;
+        margin: 0 auto;
+        border: 1px solid #c6c6c6;
+        background: #fff;
+    }
+    .hoja-excel table {
+        width: 100%;
+        min-width: 620px;
+        border-collapse: collapse;
+        font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+        font-size: 14px;
+    }
+    .hoja-excel th,
+    .hoja-excel td {
+        border: 1px solid #d4d4d4;
+        padding: 0;
+        height: 30px;
+        vertical-align: middle;
+    }
+    .hoja-excel thead th {
+        background: #f3f3f3;
+        color: #444;
+        font-weight: 600;
+        text-align: center;
+        padding: 4px 6px;
+    }
+    .hoja-excel .col-num {
+        width: 40px;
+        background: #f3f3f3;
+        color: #666;
+        text-align: center;
+        font-size: 12px;
+    }
+    .hoja-excel .col-fecha { width: 140px; }
+    .hoja-excel .col-tipo { width: 110px; }
+    .hoja-excel .col-monto { width: 130px; }
+    .hoja-excel .col-accion { width: 40px; text-align: center; }
+
+    .hoja-excel .celda {
+        width: 100%;
+        height: 30px;
+        border: none;
+        background: transparent;
+        padding: 2px 6px;
+        font: inherit;
+        color: inherit;
+    }
+    .hoja-excel .celda:focus {
+        outline: 2px solid #217346;
+        outline-offset: -2px;
+        background: #fff;
+    }
+    .hoja-excel .celda-monto { text-align: right; }
+    .hoja-excel tr.gasto .celda-monto { color: #c00000; }
+    .hoja-excel tr.ingreso .celda-monto { color: #1e7b34; }
+
+    .hoja-excel tr.renglon-nuevo td { background: #fbfbe8; }
+    .hoja-excel tr.renglon-nuevo .col-num { color: #217346; font-weight: bold; font-size: 16px; }
+
+    .hoja-excel .btn-celda {
+        border: none;
+        background: transparent;
+        color: #999;
+        width: 100%;
+        height: 30px;
+    }
+    .hoja-excel .btn-celda:hover { color: #c00000; }
+    .hoja-excel .btn-agregar { color: #217346; }
+    .hoja-excel .btn-agregar:hover { color: #145a2e; }
+
+    .hoja-excel tfoot td {
+        background: #f3f3f3;
+        font-weight: 600;
+        padding: 4px 6px;
+    }
+    .hoja-excel tfoot .etiqueta { text-align: right; }
+    .hoja-excel tfoot .valor { text-align: right; }
+    .hoja-excel tfoot tr.total-final td { background: #e2efda; font-size: 15px; }
+
+    .ayuda-hoja {
+        max-width: 900px;
+        margin: 8px auto 0;
+        font-size: 13px;
+        color: #777;
+    }
+</style>
+
 <div class="text-center">
     <h2 class="letraFusia">Cuentas del Mes</h2>
     <h4 id="tituloMes" class="letraMorada"></h4>
 </div>
 {% csrf_token %}
 
-<div class="mb-3 text-end">
+<div class="mb-3 text-end" style="max-width: 900px; margin: 0 auto;">
     <a href="/agenda/cuentas/historial" class="btn btnMorado letraBlanca btn-sm">Ver Historial</a>
 </div>
 
-<form id="formularioCuenta" style="max-width: 500px; margin: 0 auto;">
-    <div class="mb-3">
-        <label for="ingreso" class="form-label">Ingreso</label>
-        <input type="number" step="0.01" min="0" class="form-control" id="ingreso" name="ingreso" value="0.00">
-    </div>
-    <div class="mb-3">
-        <label for="gasto" class="form-label">Gasto</label>
-        <input type="number" step="0.01" min="0" class="form-control" id="gasto" name="gasto" value="0.00">
-    </div>
-    <div class="mb-3">
-        <label for="total" class="form-label">Total (Ingreso - Gasto)</label>
-        <input type="text" class="form-control" id="total" name="total" value="0.00" readonly>
-    </div>
-
-    <button type="submit" class="btn btnFusia letraBlanca">Guardar</button>
-</form>
+<div class="hoja-excel">
+    <table>
+        <thead>
+            <tr>
+                <th class="col-num"></th>
+                <th class="col-fecha">Fecha</th>
+                <th class="col-tipo">Tipo</th>
+                <th>Descripción</th>
+                <th class="col-monto">Monto</th>
+                <th class="col-accion"></th>
+            </tr>
+        </thead>
+        <tbody id="cuerpoMovimientos"></tbody>
+        <tfoot>
+            <tr>
+                <td class="col-num"></td>
+                <td colspan="3" class="etiqueta">Total ingresos</td>
+                <td id="totalIngreso" class="valor text-success">$0.00</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="col-num"></td>
+                <td colspan="3" class="etiqueta">Total gastos</td>
+                <td id="totalGasto" class="valor text-danger">$0.00</td>
+                <td></td>
+            </tr>
+            <tr class="total-final">
+                <td class="col-num"></td>
+                <td colspan="3" class="etiqueta">Total (Ingreso - Gasto)</td>
+                <td id="totalFinal" class="valor">$0.00</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<p class="ayuda-hoja">
+    Escribe en el renglón amarillo y presiona <strong>Enter</strong> (o el botón <i class="fas fa-plus"></i>) para agregarlo.
+    Los renglones ya capturados se pueden corregir directo en la celda; se guardan solos al salir de ella.
+</p>
 
 <script>
 const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -34,43 +149,269 @@ const headers = {
     'X-CSRFToken': csrftoken
 };
 
-function recalcularTotal() {
-    const ingreso = parseFloat(document.getElementById('ingreso').value) || 0;
-    const gasto = parseFloat(document.getElementById('gasto').value) || 0;
-    document.getElementById('total').value = (ingreso - gasto).toFixed(2);
+let cuentaActual = null;
+// Lo ultimo que se uso en el renglon nuevo, para capturar varios seguidos
+// sin tener que volver a elegir fecha y tipo cada vez.
+let ultimaFecha = null;
+let ultimoTipo = 'gasto';
+
+function formatoMoneda(valor) {
+    const numero = parseFloat(valor) || 0;
+    return numero.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 }
 
-document.getElementById('ingreso').addEventListener('input', recalcularTotal);
-document.getElementById('gasto').addEventListener('input', recalcularTotal);
+function hoyISO() {
+    const hoy = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${hoy.getFullYear()}-${pad(hoy.getMonth() + 1)}-${pad(hoy.getDate())}`;
+}
+
+function limitesMes(cuenta) {
+    const pad = (n) => String(n).padStart(2, '0');
+    const ultimoDia = new Date(cuenta.anio, cuenta.mes, 0).getDate();
+    return {
+        min: `${cuenta.anio}-${pad(cuenta.mes)}-01`,
+        max: `${cuenta.anio}-${pad(cuenta.mes)}-${pad(ultimoDia)}`
+    };
+}
+
+function fechaPorDefecto(cuenta) {
+    const { min, max } = limitesMes(cuenta);
+    const hoy = hoyISO();
+    return hoy >= min && hoy <= max ? hoy : min;
+}
+
+function crearCelda(contenido, clase) {
+    const td = document.createElement('td');
+    if (clase) td.className = clase;
+    td.appendChild(contenido);
+    return td;
+}
+
+function crearInputs(movimiento, limites) {
+    const fecha = document.createElement('input');
+    fecha.type = 'date';
+    fecha.className = 'celda';
+    fecha.min = limites.min;
+    fecha.max = limites.max;
+    fecha.value = movimiento.fecha;
+
+    const tipo = document.createElement('select');
+    tipo.className = 'celda';
+    [['ingreso', 'Ingreso'], ['gasto', 'Gasto']].forEach(([valor, texto]) => {
+        const opcion = document.createElement('option');
+        opcion.value = valor;
+        opcion.textContent = texto;
+        tipo.appendChild(opcion);
+    });
+    tipo.value = movimiento.tipo;
+
+    const descripcion = document.createElement('input');
+    descripcion.type = 'text';
+    descripcion.className = 'celda';
+    descripcion.maxLength = 300;
+    descripcion.placeholder = '¿En qué fue?';
+    descripcion.value = movimiento.descripcion || '';
+
+    const monto = document.createElement('input');
+    monto.type = 'number';
+    monto.step = '0.01';
+    monto.min = '0';
+    monto.className = 'celda celda-monto';
+    monto.placeholder = '0.00';
+    monto.value = movimiento.monto || '';
+
+    return { fecha, tipo, descripcion, monto };
+}
+
+function leerRenglon(inputs) {
+    return {
+        fecha: inputs.fecha.value,
+        tipo: inputs.tipo.value,
+        descripcion: inputs.descripcion.value,
+        monto: inputs.monto.value
+    };
+}
+
+function validarRenglon(datos) {
+    if (!datos.fecha) return 'Falta la fecha.';
+    if (!(parseFloat(datos.monto) > 0)) return 'El monto debe ser mayor a 0.';
+    return null;
+}
+
+function mostrarError(mensaje) {
+    Swal.fire({ title: 'No se pudo guardar', text: mensaje, icon: 'error', confirmButtonText: 'Aceptar' });
+}
+
+function pintarTotales(cuenta) {
+    document.getElementById('totalIngreso').innerText = formatoMoneda(cuenta.ingreso);
+    document.getElementById('totalGasto').innerText = formatoMoneda(cuenta.gasto);
+    const totalFinal = document.getElementById('totalFinal');
+    totalFinal.innerText = formatoMoneda(cuenta.total);
+    totalFinal.className = 'valor ' + (parseFloat(cuenta.total) < 0 ? 'text-danger' : 'text-success');
+}
+
+async function guardarMovimiento(datos) {
+    const response = await fetch(`${urlServer}/api/cuentas/movimientos/guardar`, {
+        method: 'POST', headers, body: JSON.stringify(datos)
+    });
+    const cuerpo = await response.json();
+    if (!response.ok) throw new Error(cuerpo.message || cuerpo.detail || 'Error al guardar.');
+    return cuerpo;
+}
+
+function crearRenglonMovimiento(movimiento, numero, limites) {
+    const tr = document.createElement('tr');
+    tr.className = movimiento.tipo;
+
+    const inputs = crearInputs(movimiento, limites);
+    const num = document.createElement('span');
+    num.textContent = numero;
+
+    const borrar = document.createElement('button');
+    borrar.type = 'button';
+    borrar.className = 'btn-celda';
+    borrar.title = 'Eliminar renglón';
+    borrar.innerHTML = '<i class="fas fa-trash-alt"></i>';
+    borrar.addEventListener('click', () => eliminarMovimiento(movimiento));
+
+    tr.appendChild(crearCelda(num, 'col-num'));
+    tr.appendChild(crearCelda(inputs.fecha));
+    tr.appendChild(crearCelda(inputs.tipo));
+    tr.appendChild(crearCelda(inputs.descripcion));
+    tr.appendChild(crearCelda(inputs.monto));
+    tr.appendChild(crearCelda(borrar, 'col-accion'));
+
+    // Al salir de una celda modificada se guarda ese renglon. Solo se
+    // actualizan los totales (no se redibuja la tabla) para no perder la
+    // celda a la que el usuario se acaba de mover -- salvo que cambie la
+    // fecha, porque entonces el renglon tiene que reacomodarse.
+    Object.values(inputs).forEach((input) => {
+        input.addEventListener('change', async () => {
+            const datos = leerRenglon(inputs);
+            const error = validarRenglon(datos);
+            if (error) {
+                mostrarError(error);
+                pintarCuenta(cuentaActual);
+                return;
+            }
+            try {
+                const fechaCambio = datos.fecha !== movimiento.fecha;
+                cuentaActual = await guardarMovimiento({ id: movimiento.id, ...datos });
+                Object.assign(movimiento, datos);
+                tr.className = datos.tipo;
+                if (fechaCambio) {
+                    pintarCuenta(cuentaActual);
+                } else {
+                    pintarTotales(cuentaActual);
+                }
+            } catch (e) {
+                mostrarError(e.message);
+                pintarCuenta(cuentaActual);
+            }
+        });
+    });
+
+    return tr;
+}
+
+function crearRenglonNuevo(limites) {
+    const tr = document.createElement('tr');
+    tr.className = 'renglon-nuevo ' + ultimoTipo;
+
+    const inputs = crearInputs({ fecha: ultimaFecha, tipo: ultimoTipo, descripcion: '', monto: '' }, limites);
+    inputs.tipo.addEventListener('change', () => { tr.className = 'renglon-nuevo ' + inputs.tipo.value; });
+
+    const mas = document.createElement('span');
+    mas.textContent = '+';
+
+    const agregar = document.createElement('button');
+    agregar.type = 'button';
+    agregar.className = 'btn-celda btn-agregar';
+    agregar.title = 'Agregar renglón';
+    agregar.innerHTML = '<i class="fas fa-plus"></i>';
+
+    tr.appendChild(crearCelda(mas, 'col-num'));
+    tr.appendChild(crearCelda(inputs.fecha));
+    tr.appendChild(crearCelda(inputs.tipo));
+    tr.appendChild(crearCelda(inputs.descripcion));
+    tr.appendChild(crearCelda(inputs.monto));
+    tr.appendChild(crearCelda(agregar, 'col-accion'));
+
+    async function agregarRenglon() {
+        const datos = leerRenglon(inputs);
+        const error = validarRenglon(datos);
+        if (error) {
+            mostrarError(error);
+            return;
+        }
+        try {
+            cuentaActual = await guardarMovimiento(datos);
+            ultimaFecha = datos.fecha;
+            ultimoTipo = datos.tipo;
+            pintarCuenta(cuentaActual);
+            document.querySelector('#cuerpoMovimientos tr.renglon-nuevo td:nth-child(4) input').focus();
+        } catch (e) {
+            mostrarError(e.message);
+        }
+    }
+
+    agregar.addEventListener('click', agregarRenglon);
+    Object.values(inputs).forEach((input) => {
+        input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                agregarRenglon();
+            }
+        });
+    });
+
+    return tr;
+}
+
+function pintarCuenta(cuenta) {
+    document.getElementById('tituloMes').innerText = cuenta.mes_nombre;
+    const limites = limitesMes(cuenta);
+    if (!ultimaFecha) ultimaFecha = fechaPorDefecto(cuenta);
+
+    const cuerpo = document.getElementById('cuerpoMovimientos');
+    cuerpo.innerHTML = '';
+    cuenta.movimientos.forEach((movimiento, indice) => {
+        cuerpo.appendChild(crearRenglonMovimiento(movimiento, indice + 1, limites));
+    });
+    cuerpo.appendChild(crearRenglonNuevo(limites));
+
+    pintarTotales(cuenta);
+}
+
+async function eliminarMovimiento(movimiento) {
+    const confirmacion = await Swal.fire({
+        title: '¿Eliminar este renglón?',
+        text: `${movimiento.descripcion || 'Sin descripción'} - ${formatoMoneda(movimiento.monto)}`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar'
+    });
+    if (!confirmacion.isConfirmed) return;
+
+    const response = await fetch(`${urlServer}/api/cuentas/movimientos/eliminar`, {
+        method: 'POST', headers, body: JSON.stringify({ id: movimiento.id })
+    });
+    if (!response.ok) {
+        mostrarError('No se pudo eliminar el renglón.');
+        return;
+    }
+    cuentaActual = await response.json();
+    pintarCuenta(cuentaActual);
+}
 
 window.onload = async (e) => {
     // Pide (o crea en 0, si es la primera vez que se entra en este mes)
-    // el renglon del mes/anio actual -- el backend decide cual es "el
-    // mes actual" con su propio reloj, nunca se manda un id desde aqui.
-    const cuenta = await restService.get({ url: 'api/cuentas/mesactual/', body: {}, headers });
-    document.getElementById('tituloMes').innerText = cuenta.mes_nombre;
-    document.getElementById('ingreso').value = cuenta.ingreso;
-    document.getElementById('gasto').value = cuenta.gasto;
-    recalcularTotal();
+    // la cuenta del mes/anio actual con sus movimientos -- el backend
+    // decide cual es "el mes actual" con su propio reloj.
+    cuentaActual = await restService.get({ url: 'api/cuentas/mesactual/', body: {}, headers });
+    pintarCuenta(cuentaActual);
 };
-
-const formulario = document.getElementById('formularioCuenta');
-formulario.addEventListener('submit', async function (event) {
-    event.preventDefault();
-
-    const datosJson = {
-        ingreso: document.getElementById('ingreso').value,
-        gasto: document.getElementById('gasto').value
-    };
-
-    const result = await restService.post({ url: 'api/cuentas/mesactual/guardar', body: datosJson, headers });
-    console.log(result);
-
-    Swal.fire({
-        title: "<strong>Cuenta del mes guardada</strong>",
-        icon: "success",
-        confirmButtonText: "Aceptar"
-    });
-});
 </script>
 {% endblock %}
